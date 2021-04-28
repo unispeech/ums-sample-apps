@@ -65,9 +65,9 @@ for lex
           <action application="answer"/>
           <action application="set" data="tts_engine=unimrcp:lex_mrcp-v2"/>
           <action application="set" data="asr_engine=unimrcp:lex_mrcp-v2"/>
-          <action application="set" data="AWS_BOT_ID=QL2JKXN9BI"/>
-          <action application="set" data="AWS_ALIAS_ID=TSTALIASID"/>
-          <action application="python" data="FreeSwitchDemoLEXV2"/>
+          <action application="set" data="AWS_BOT_ID=your_bot_id"/>
+          <action application="set" data="AWS_ALIAS_ID=your_alias_id"/>
+          <action application="python" data="freeswitch_lexv2"/>
 
       </condition>
     </extension> 
@@ -79,7 +79,8 @@ for gdf
 
           <action application="answer"/>
           <action application="set" data="tts_engine=unimrcp:gdf_mrcp-v2"/>
-          <action application="python" data="FreeSwitchDemoGDF"/>
+          <action application="set" data="GDF_PROJECT_ID=your_project_id"/>
+          <action application="python" data="freeswitch_gdfv1"/>
 
       </condition>
     </extension> 
