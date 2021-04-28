@@ -1,13 +1,19 @@
 from freeswitch import *
 import json
       
+"""
+    Asterisk AGI Lex V2 Application
+
+    This script interacts with Lex V2 API via UniMRCP server.
+
+    * Revision: 1
+    * Date: apr 28, 2021
+    * Vendor: Universal Speech Solutions LLC
+""" 
 
 class LexV2App:
     
-    """A class representing Dialogflow application"""
-
- 
-
+    """A class representing LexV2 application"""
     def __init__(self,session,options):
 
         """Constructor"""
