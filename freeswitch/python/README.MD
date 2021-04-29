@@ -1,7 +1,5 @@
 Freeswitch python scripts for interacting with unimrcp servers 
 
-## Use Javascript with mod_v8 mode_python is not stabil. this is only demonstration
-
 ## NOTE
 
 For using this script you must  have a working instance of unimrcp server.
