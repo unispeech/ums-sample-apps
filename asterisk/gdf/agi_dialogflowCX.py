@@ -8,8 +8,6 @@
 
     This script interacts with Google Dialogflow CX API via UniMRCP server.
 
- 
-
     * Revision: 1
 
     * Date: Apr 28, 2021
@@ -22,7 +20,6 @@
  
 
 import sys
-
 from asterisk.agi import *
 
  
@@ -31,7 +28,7 @@ class GdfCxApp:
 
  
 
-    """A class representing Dialogflow application"""
+    """A class representing DialogflowCX application"""
 
  
 

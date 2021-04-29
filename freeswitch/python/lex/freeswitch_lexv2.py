@@ -2,7 +2,7 @@ from freeswitch import *
 import json
       
 """
-    Asterisk AGI Lex V2 Application
+    Freswitch Lex V2 Application
 
     This script interacts with Lex V2 API via UniMRCP server.
 

@@ -2,20 +2,13 @@ from freeswitch import *
 import json
 """
 
-    Asterisk AGI Dialogflow  Application
-
- 
+    Freeswitch Dialogflow  Application
 
     This script interacts with Google Dialogflow  API via UniMRCP server.
 
- 
-
     * Revision: 1
-
     * Date: Apr 28, 2021
-
     * Vendor: Universal Speech Solutions LLC
-
 
 """
 
