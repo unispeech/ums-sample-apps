@@ -1,12 +1,10 @@
 
 """
     Google Calendar Connector Routine
-
     This script provides helper routine for retrieving data from
     the Google Calendar.
-
     * Revision: 1
-    * Date: Apr 29, 2020
+    * Date: Apr 30, 2021
     * Vendor: Universal Speech Solutions LLC
 """
 from google.oauth2 import service_account
@@ -47,7 +45,7 @@ class GoogleCalendarConnector:
                 singleEvents=True,
                 orderBy='startTime').execute()
             events = events_result.get('items', [])
-
+            # print(events)
             if not events:
                 result['status'] = True
                 result['message'] = 'No events found'
@@ -94,7 +92,7 @@ class GoogleCalendarConnector:
 
     
 
-    def create_event(self,dates,callerid,callid,email):
+    def create_event(self,dates,name,lastname,callerid,callid,email):
         """Creates event in Google Calendar"""
         result=dict()
         result['status'] = False
@@ -106,8 +104,8 @@ class GoogleCalendarConnector:
             event_result = service.events().insert(
                 calendarId=CALENDAR_ID,
                 body={
-                    "summary": 'GDF Event for %s' % (callerid),
-                    "description": 'Created by GDF script for callerid %s, callid %s, email %s' % (callerid,callid,email),
+                    "summary": 'GDF Event for %s' % (name),
+                    "description": 'Created by GDF script for name %s,last name %s ,callerid %s, callid %s, email %s' % (name,lastname,callerid,callid,email),
                     "start": {"dateTime": start },
                     "end": {"dateTime": end },
                    
@@ -126,6 +124,38 @@ class GoogleCalendarConnector:
             result['error_cause'] = 'Unknown error occurred'
         return result
 
+
+    def update_event(self,dates,name,lastname,callerid,callid,email):
+        """Updates event in Google Calendar"""
+        result=dict()
+        result['status'] = False
+        try:
+            service = self.get_calendar_service()
+            start = dates['startDateTime']
+            end = dates['endDateTime']
+            event_result = service.events().patch(
+                calendarId=CALENDAR_ID,
+                eventId=self.eventId,
+                body={
+                    "summary": 'GDF Event for %s' % (name),
+                    "description": 'Created by GDF script for name %s,last name %s ,callerid %s, callid %s, email %s' % (name,lastname,callerid,callid,email),
+                    "start": {"dateTime": start },
+                    "end": {"dateTime": end },
+                    
+                }
+            ).execute()
+            if event_result:
+                result['status'] = True
+                result['id']= event_result['id']
+
+        except googleapiclient.errors.HttpError:
+            result['error_cause']= 'Failed to update event'
+        except:
+            result['error_cause'] = 'Unknown error occurred'
+
+        return result
+
+        
     def get_date_from_event(self,date):
         date_time_str = date.get('dateTime')
         time_zone_str = date.get('timeZone')
@@ -141,3 +171,5 @@ class GoogleCalendarConnector:
 
         return date_time.strftime("%Y/%m/%d %H:%M:%S")
 
+# app= GoogleCalendarConnector()
+# print(app.get_event_by_mail("kocharyan.vahag@gmail.com"))

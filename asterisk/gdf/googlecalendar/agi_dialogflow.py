@@ -1,25 +1,19 @@
 #!/usr/bin/python2.7
 """
-
     Asterisk AGI Dialogflow  sample Calendar Application
-
  
-
-    This script interacts with Google Dialogflow  API and Calendar API via UniMRCP server.
-
+    This script interacts with mysql dtabase Google Dialogflow  API and Calendar API via UniMRCP server.
     * Revision: 1
-    * Date: Apr 29, 2021
+    * Date: Apr 30, 2021
     * Vendor: Universal Speech Solutions LLC
 """
-
-
-
 import sys
 import dateutil.parser
 from datetime import datetime
 from asterisk.agi import *
 from config import *
 from gcalendar import *
+import MySQLdb
 
 
 class GdfApp:
@@ -32,17 +26,62 @@ class GdfApp:
         self.project_id = agi.get_variable('GDF_PROJECT_ID')
         self.status = None
         self.cause = None
+        self.caller_info = None
         self.callerid = self.get_callerid()
         self.callid = self.get_callid()
         self.starttime = None
         self.endtime = None
         
+    def connect(self):
+        """ Database connector function"""
+        self.db = MySQLdb.connect(host=DBHOST, user=DBUSER,
+                                  passwd=DBPASSWD, db=DBNAME)
+
+
+    def get_caller_info(self, callerid):
+        """Retrieves caller information from mysql db"""
+        result = dict()
+        result['status'] = False
+        try:
+            self.connect()
+
+            db = self.db.cursor()
+
+            db.execute(
+                """SELECT first_name,last_name,email FROM gcalendarusers WHERE caller_id=%s  """ % (callerid))
+            record = db.fetchone()
+            if record:
+                result['status'] = True
+                result['first_name'] = record[0]
+                result['last_name'] = record[1]
+                result['email'] = record[2]
+            else:
+                result['error_cause'] = 'No record found'
+            db.close()
+
+        except MySQLdb.Error as e:
+            result['error_cause'] = 'MySQL Error [%d]: %s' % (e.args[0], e.args[1])
+        except:
+            result['error_cause'] = 'Unknown error occurred'
+
+        return result
 
     def trigger_welcome_intent(self):
         """Triggers a welcome intent"""
         grammar = 'builtin:event/welcome'
         separator = '?'
 
+        agi.verbose('retrieve caller info for %s' % self.callerid)
+        self.caller_info = self.get_caller_info(self.callerid)
+        if self.caller_info['status'] == True:
+            agi.verbose('got caller info: first name %s' % (self.caller_info['status']))
+            agi.verbose('got caller info: first name %s, last name %s, email %s' % (self.caller_info['first_name'], self.caller_info['last_name'], self.caller_info['email']))
+            grammar = self.append_grammar_parameter(
+                grammar, "name", self.caller_info['first_name'], separator)
+            separator = ';'
+        else:
+            agi.verbose('failed to get caller info: %s' %
+                        (self.caller_info['error_cause']))
         if self.project_id:
             grammar = self.append_grammar_parameter(
                 grammar, "projectid", self.project_id, separator)
@@ -203,66 +242,78 @@ class GdfApp:
         """Creates an event in Google Calendar"""
         all_present = agi.get_variable('RECOG_INSTANCE(0/0/all_required_params_present)')
         agi.verbose('got required params status %s'% all_present)
-
+        
         if all_present:
             dates = self.get_event_dates()
-            email = agi.get_variable('RECOG_INSTANCE(0/0/parameters/email)')
-            agi.verbose('create event: dates %s,  call-id %s, caller-id %s, email %s' % (dates, self.callerid, self.callid, email))
-            result = calendar.create_event(dates,self.callerid,self.callid,email)
+            name = None
+            last_name = None
+            email = None
+        
+            if self.caller_info['status'] == True:
+                name = self.caller_info['first_name']
+                last_name = self.caller_info['last_name']
+                email = self.caller_info['email']
+
+            agi.verbose('create event: dates %s,name %s,last_name %s,call-id %s, caller-id %s, email %s' % (dates,name,last_name,self.callerid, self.callid, email))
+            result = calendar.create_event(dates,name,last_name,self.callerid,self.callid,email)
             
             if result['status'] == True:
                 agi.verbose('event is successfuly created for %s ' % dates)
                 value = "succeeded"
             else:
                 agi.verbose('failed to create event: %s ' % result['error_cause'])
-                value = "failed"
+                value = "Your query failed"
             
             self.transfer_to_intent('GoogleCalendarQueryStatus', value)
 
     def check_event(self):
         """Checks an event in Google Calendar"""
-        intent = None
-        grammar = 'builtin:event/'
-        separator = '?'
+        intent = 'GoogleCalendarQueryStatus'
 
         email = None
+        if self.caller_info['status'] == True:
+            email = self.caller_info['email']
+        agi.verbose('retrieve google calendar appointment date for  email %s' % email)
+        result = calendar.get_event_by_mail(email)
+        if result['status'] == True:
+            if "appointment_date" in result:
+                appointment_date = result['appointment_date']
+                agi.verbose('got google calendar event date: %s' % appointment_date)
+                intent="GoogleCalendarCheckSuccess"
+                value=appointment_date
+            else:
+                value="You do not have any appointments scheduled"
+        else:
+            agi.verbose('failed to get event date: %s' % result['error_cause'])
+            value = result['error_cause']
+                
+            
+        self.transfer_to_intent(intent, value)
+
+    def change_event(self):
+        """Changes or updates an event in Google Calendar"""
         all_present = agi.get_variable('RECOG_INSTANCE(0/0/all_required_params_present)')
         agi.verbose('got required params status %s'% all_present)
         if all_present:
-            email = agi.get_variable('RECOG_INSTANCE(0/0/parameters/email)')
-            agi.verbose('retrieve google calendar event date for  email %s' % email)
-            result = calendar.get_event_by_mail(email)
+            dates = self.get_event_dates()
+            name = None
+            last_name = None
+            email = None
+            if self.caller_info['status'] == True:
+                name = self.caller_info['first_name']
+                last_name = self.caller_info['last_name']
+                email = self.caller_info['email']
+            agi.verbose('update event: dates %s,name %s,last_name %s,call-id %s, caller-id %s, email %s' % (dates,name,last_name,self.callerid, self.callid, email))
+            result = calendar.create_event(dates,name,last_name,self.callerid,self.callid,email)
+            intent = 'GoogleCalendarQueryStatus'
             if result['status'] == True:
-                if "appointment_date" in result:
-                    appointment_date = result['appointment_date']
-                    agi.verbose('got google calendar event date: %s' % appointment_date)
-                    intent = "EventCheckSuccess"
-                    grammar += intent
-                    grammar = self.append_grammar_parameter(
-                        grammar, "date", appointment_date,separator)
-                    separator = ';'
-
-                else:
-                    intent = 'EventCheckNone'
-                    grammar += intent
+                agi.verbose('event date is successfuly changed to %s ' % dates)
+                value = "succeeded"
             else:
-                agi.verbose('failed to get event date: %s' % result['error_cause'])
-                intent = 'EventCheckFailure'
-                grammar += intent
+                agi.verbose('failed to update event: %s ' % result['error_cause'])
+                value = "failed"
 
-            if self.project_id:
-                grammar = self.append_grammar_parameter(
-                    grammar, "projectid", self.project_id, separator)
-                separator = ';'
-
-            self.prompt = ' '
-            self.grammars = grammar
-            self.synth_and_recog()
-
-            if self.status != 'OK' or self.cause != '000':
-                agi.verbose('failed to trigger %s intent' % intent)
-                return
-            self.prompt = self.get_fulfillment_text()
+            self.transfer_to_intent(intent, value)
 
 
     def transfer_to_intent(self,intent,value):
@@ -276,6 +327,10 @@ class GdfApp:
             return
 
         self.prompt = self.get_fulfillment_text()
+
+
+    
+
 
     def run(self):
         """Interacts with the caller in a loop until the dialog is complete"""
@@ -299,7 +354,8 @@ class GdfApp:
                     self.action = self.get_action()
                     if self.check_dialog_completion():
                         processing = False
-
+                    elif self.action == 'EventChange':
+                        self.change_event()
                     elif self.action == 'EventCheck':
                         self.check_event()
                     elif self.action == 'EventCreate':
@@ -318,7 +374,7 @@ class GdfApp:
 
 agi = AGI()
 calendar = GoogleCalendarConnector()
-options = 'plt=1&nif=xml&b=1&sct=1000&sint=15000&nit=10000'
+options = 'plt=1&nif=xml&b=1&sct=15000&sint=15000&nit=10000'
 gdf_app = GdfApp(options)
 
 gdf_app.run()
