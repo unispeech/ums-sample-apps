@@ -1,4 +1,4 @@
-Freeswitch python scripts for interacting with unimrcp servers 
+Freeswitch javascript v8 script for interacting with unimrcp server google dialogflow and jira 
 
 ## NOTE
 
