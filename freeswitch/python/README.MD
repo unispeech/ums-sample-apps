@@ -37,10 +37,88 @@ applicable freeswitch version is 1.8(if you build from source) or 1.10.5.release
 
 ```
 
-enable mod_unimrcp and mod_python in modules.conf and disable mod_opus
-configure sip profile  sip-ext-ip ind rtp-ext-ip 
+Enable mod_unimrcp and mod_python in modules.conf and disable mod_opus
+configure sip profile  sip-ext-ip and rtp-ext-ip 
 change permissions of /var/run/freeswitch from freeswitch to root if you want to run freeswitch with root user
 
+
+
+## Configuring UniMRCP profile
+
+Create a new UniMRCP profile for example ums-v2.xml, located in /usr/local/freeswitch/etc/freeswitch/mrcp_profiles, and pointing to the UniMRCP server configured in the previous step. In the example below, the IP address of UniMRCP Server is 10.128.0.4, and the IP address of FreeSWITCH is 10.128.0.5.
+```
+<include>
+  <!-- UniMRCP Server MRCPv2 -->
+  <profile name="ums-v2" version="2">
+    <param name="client-ip" value="10.128.0.5"/>
+    <param name="client-port" value="16092"/>
+    <param name="server-ip" value="10.128.0.4"/>
+    <param name="server-port" value="8060"/>
+    <!--param name="force-destination" value="1"/-->
+    <param name="sip-transport" value="udp"/>
+    <!--param name="ua-name" value="FreeSWITCH"/-->
+    <!--param name="sdp-origin" value="FreeSWITCH"/-->
+    <!--param name="rtp-ext-ip" value="auto"/-->
+    <param name="rtp-ip" value="10.128.0.5"/>
+    <param name="rtp-port-min" value="15000"/>
+    <param name="rtp-port-max" value="16000"/>
+    <!-- enable/disable rtcp support -->
+    <param name="rtcp" value="0"/>
+    <!-- rtcp bye policies (rtcp must be enabled first)
+             0 - disable rtcp bye
+             1 - send rtcp bye at the end of session
+             2 - send rtcp bye also at the end of each talkspurt (input)
+    -->
+    <param name="rtcp-bye" value="2"/>
+    <!-- rtcp transmission interval in msec (set 0 to disable) -->
+    <param name="rtcp-tx-interval" value="5000"/>
+    <!-- period (timeout) to check for new rtcp messages in msec (set 0 to disable) -->
+    <param name="rtcp-rx-resolution" value="1000"/>
+    <!--param name="playout-delay" value="50"/-->
+    <!--param name="max-playout-delay" value="200"/-->
+    <!--param name="ptime" value="20"/-->
+    <param name="codecs" value="PCMU PCMA L16/96/8000 telephone-event/101/8000"/>
+
+    <!-- Add any default MRCP params for SPEAK requests here -->
+    <synthparams>
+    </synthparams>
+
+    <!-- Add any default MRCP params for RECOGNIZE requests here -->
+    <recogparams>
+      <!--param name="start-input-timers" value="false"/-->
+    </recogparams>
+  </profile>
+</include>
+
+```
+Remove all other sample profiles located in the same directory.
+Afterwards, in the configuration file unimrcp.conf.xml, located in /usr/local/freeswitch/etc/freeswitch/autoload_configs directory, set the name of the configured profile.
+
+```
+<configuration name="unimrcp.conf" description="UniMRCP Client">
+  <settings>
+    <!-- UniMRCP profile to use for TTS -->
+    <param name="default-tts-profile" value="ums-v2"/>
+    <!-- UniMRCP profile to use for ASR -->
+    <param name="default-asr-profile" value="ums-v2"/>
+    <!-- UniMRCP logging level to appear in freeswitch.log.  Options are:
+         EMERGENCY|ALERT|CRITICAL|ERROR|WARNING|NOTICE|INFO|DEBUG -->
+    <param name="log-level" value="DEBUG"/>
+    <!-- Enable events for profile creation, open, and close -->
+    <param name="enable-profile-events" value="false"/>
+
+    <param name="max-connection-count" value="100"/>
+    <param name="offer-new-connection" value="1"/>
+    <param name="request-timeout" value="3000"/>
+  </settings>
+
+  <profiles>
+    <X-PRE-PROCESS cmd="include" data="../mrcp_profiles/*.xml"/>
+  </profiles>
+
+</configuration>
+
+```
 start 
 ```bash
     freeswitch -ncwait
