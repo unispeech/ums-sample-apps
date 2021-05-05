@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
- Aspect Voxeo Prophecy AWS Lex vxml Application
+ AWS Lex vxml Application
     * Revision: 2
     * Date: May 5, 2021
     * Vendor: Universal Speech Solutions LLC
@@ -74,7 +74,7 @@
   <form id="welcome">
     <property name="recordutterance" value="false"/>
     <property name="timeout" value="10s"/>
-    <property name="incompletetimeout" value="15000ms"/>
+    
     <field >
       <!-- Create bultin grammar based on default speech grammar bot settings and additional params-->
       <grammar  expr="app.CreateGrammar('message',app.WelcomeMessage)"/> 
