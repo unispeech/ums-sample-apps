@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!--
+ Azure echo bot Application
+    * Revision: 2
+    * Date: May 5, 2021
+    * Vendor: Universal Speech Solutions LLC
+-->
+<vxml version="2.1" xmlns="http://www.w3.org/2001/vxml">
+  <script>
+      <![CDATA[
+
+        function main(){
+          this.result;
+          this.speak="Welcome to Azure Echo bot. <break time=\"300ms\"/> Say something i will repeat your phrase.";
+          this.finalMessage = "<break time=\"100ms\"/>Thank you. See you next time.";
+
+          if(application.lastresult$){
+            this.result = application.lastresult$[0].interpretation;
+            this.speak=this.result.speak;
+          }
+        
+
+        }
+
+           
+      ]]> 
+      
+      
+      
+  </script>
+  <var name="app" expr="new main()"/> 
+  <form id="welcome">
+    <block>
+      <prompt><value expr="app.speak"/></prompt>
+      <goto next="#main"/>
+    </block>
+  </form>
+
+  <form id="main">
+    <property name="recordutterance" value="false"/>
+    <property name="timeout" value="10s"/>
+
+    <field>
+      <grammar src="builtin:speech/transcribe?"/>
+
+      <filled> 
+        <assign  name="app" expr="new main()"/> 
+        <log>got speak <value expr="app.speak"/></log>
+        <prompt><value expr="app.speak"/></prompt>
+
+      </filled>
+
+      <catch event="noinput nomatch">
+         <prompt><value expr="app.speak"/></prompt>
+         <reprompt/>
+      </catch>
+      <catch event="noinput nomatch" count="5">
+        <prompt><value expr="app.finalMessage"/></prompt>
+        <disconnect/>
+      </catch>
+    </field>
+
+    <block>
+      <goto next="#main"/>
+    </block>
+  </form>
+
+
+  <catch>
+    <log>Caught event: <value expr="_event"/>, message: <value expr="_message"/></log>
+  </catch>
+</vxml>

@@ -1,7 +1,11 @@
 #!/usr/bin/python2.7
 """
-    Asterisk AGI Azure bot  Demo Application
+    Asterisk AGI Azure Echo bot  Demo Application
+    This script interacts with Azure echo bot via UniMRCP server.
 
+    * Revision: 1
+    * Date: May 5, 2021
+    * Vendor: Universal Speech Solutions LLC
 """
 
 import sys
@@ -17,11 +21,11 @@ class AzurebotApp:
         self.options = options
         self.status = None
         self.cause = None
-        self.prompt = 'Welcome to Azure bot.  How can i help you?'
+        self.prompt = 'Welcome to Azure Echo bot. Say something i will repeat your phrase?'
 
     def detect_intent(self):
         """Performs a streaming intent detection"""
-        self.grammars = "builtin:speech/transcribe,builtin:dtmf/digits" 
+        self.grammar = "builtin:speech/transcribe?" 
         self.synth_and_recog()
         
 
@@ -30,7 +34,7 @@ class AzurebotApp:
         if not self.prompt:
             self.prompt = ' '
         args = "\\\"%s\\\",\\\"%s\\\",%s" % (
-            self.prompt, self.grammars, self.options)
+            self.prompt, self.grammar, self.options)
         agi.set_variable('RECOG_STATUS', '')
         agi.set_variable('RECOG_COMPLETION_CAUSE', '')
         self.action = None
@@ -47,7 +51,7 @@ class AzurebotApp:
     def get_speak(self):
         """Retrieves message text from the data returned by bot"""
         speak = agi.get_variable(
-            'RECOG_INSTANCE(0/0/object/speak)')
+            'RECOG_INSTANCE(0/0/speak)')
         if isinstance(speak, str):
             speak = unicode(speak, 'utf-8')
         agi.verbose('got message %s' % speak)
@@ -75,7 +79,7 @@ class AzurebotApp:
 
 
 agi = AGI()
-options = 'plt=1&b=1&sct=1000&sint=15000&nit=10000,spl=en-US'
+options = 'nif=json&plt=1&b=1&sct=1000&sint=15000&nit=10000'
 botApp = AzurebotApp(options)
 
 botApp.run()
