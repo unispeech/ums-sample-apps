@@ -14,7 +14,7 @@ import json
 
 class AzureBotApp:
     
-    """A class representing DialogflowV1 application"""
+    """A class representing Azure echo bot application"""
 
  
 
@@ -74,7 +74,7 @@ class AzureBotApp:
 def handler(session, args):
     session.answer()
     session.setAutoHangup(False)
-    options ="{start-input-timers=true,no-input-timeout=15000,recognition-timeout=5000}"
+    options ="{start-input-timers=false,no-input-timeout=5000,recognition-timeout=5000}"
     azure_bot_app = AzureBotApp(session,options)
     azure_bot_app.run()
     session.hangup()
