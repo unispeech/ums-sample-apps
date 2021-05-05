@@ -75,7 +75,7 @@
     
     <property name="recordutterance" value="false"/>
     <property name="timeout" value="10s"/>
-    <property name="incompletetimeout" value="15000ms"/>
+    
     <field >
       <grammar  expr="app.WelcomeGrammar"/> 
 

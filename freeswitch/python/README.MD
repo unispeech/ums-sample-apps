@@ -134,7 +134,7 @@ python site-packages must contain
 ```
 
 ## Put following extentions to your dialplan xml
-for lex
+lex V2
 ```
     <extension name="493">
       <condition field="destination_number" expression="^493$">
@@ -149,7 +149,7 @@ for lex
       </condition>
     </extension> 
 ```
-for gdf
+gdf
 ```
     <extension name="494">
       <condition field="destination_number" expression="^494$">
@@ -158,6 +158,17 @@ for gdf
           <action application="set" data="tts_engine=unimrcp:gdf_mrcp-v2"/>
           <action application="set" data="GDF_PROJECT_ID=your_project_id"/>
           <action application="python" data="freeswitch_gdfv1"/>
+
+      </condition>
+    </extension> 
+```
+azure bot
+```
+    <extension name="487">
+      <condition field="destination_number" expression="^487$">
+
+          <action application="answer"/>
+          <action application="python" data="freeswitch_azurebot"/>
 
       </condition>
     </extension> 

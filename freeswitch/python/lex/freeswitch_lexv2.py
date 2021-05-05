@@ -60,7 +60,7 @@ class LexV2App:
 
         """Performs a streaming intent detection"""
 
-        self.grammars = "%s,%s" % (self.compose_speech_grammar(), self.compose_dtmf_grammar())
+        self.grammars = "%s\n%s" % (self.compose_speech_grammar(), self.compose_dtmf_grammar())
         self.play_and_detect_speech()
 
 

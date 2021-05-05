@@ -43,7 +43,7 @@ class GdfApp:
     def detect_intent(self):
 
         """Performs a streaming intent detection"""
-        self.grammars = "%s,%s" % (self.compose_speech_grammar(), self.compose_dtmf_grammar())
+        self.grammars = "%s\n%s" % (self.compose_speech_grammar(), self.compose_dtmf_grammar())
         self.play_and_detect_speech()
 
 
@@ -138,7 +138,7 @@ class GdfApp:
                 if self.check_dialog_completion():
                     break
             else:
-                console_log("ERR",'no result %s\n' % result)
+                console_log("ERR",'no result %s\n' % self.result)
                 break
 
         self.session.set_tts_params(self.tts_engine, ' ')
