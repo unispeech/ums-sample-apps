@@ -34,11 +34,12 @@ applicable freeswitch version is 1.8(if you build from source) or 1.10.5.release
 
     yum install freeswitch-python.x86_64
 
+    yum install sofia-sip
 
 ```
 
 Enable mod_unimrcp and mod_python in modules.conf and disable mod_opus
-configure sip profile  sip-ext-ip and rtp-ext-ip 
+configure sip profile  sip external ip  and rtp external ip 
 change permissions of /var/run/freeswitch from freeswitch to root if you want to run freeswitch with root user
 
 
