@@ -1,15 +1,9 @@
 """
 
-    freeSWITCH Dialogflow CX Application
-
- 
-
+    FreeSWITCH Dialogflow CX Application
     This script interacts with Google Dialogflow CX API via UniMRCP server.
-
     * Revision: 1
-
     * Date: May 7, 2021
-
     * Vendor: Universal Speech Solutions LLC
 
 
@@ -159,7 +153,7 @@ class GdfCxApp:
             if 'text' in message:
                 prompt += message['text']['text'][0]   
         prompt = str(prompt)
-        console_log("ERR",'got next prompt %s\n' % prompt)
+        console_log("INFO",'got next prompt %s\n' % prompt)
         return prompt
 
  
@@ -171,7 +165,7 @@ class GdfCxApp:
         current_page_display_name =result['currentPage']['displayName']
         complete = False
         if current_page_display_name == "End Session":
-            console_log("ERR",'got current page display name: %s\n' % str(current_page_display_name))
+            console_log("INFO",'got current page display name: %s\n' % str(current_page_display_name))
             complete = True
         return complete
           

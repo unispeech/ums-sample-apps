@@ -226,6 +226,20 @@ Configure expected NLSML format of unimrcp server on umsazurebot.xml for json
       tag-format="semantics/json"
    />
 ```
+
+Configure expected NLSML format of unimrcp server on umsazurebot.xml for xml
+```xml
+
+    <results
+      format="standart"
+      indent="0"
+      replace-dots="true"
+      confidence-format="auto"
+      tag-format="semantics/xml"
+   />
+```
+
+
 ```xml
     <extension name="487">
       <condition field="destination_number" expression="^487$">

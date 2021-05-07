@@ -137,7 +137,7 @@ class LexV2App:
         result=json.loads(self.result)
         prompt = result['textResponse']['messages'][0]['content']
         prompt = str(prompt)
-        console_log("ERR",'got next prompt %s\n' % prompt)
+        console_log("info",'got next prompt %s\n' % prompt)
         return prompt
 
  
