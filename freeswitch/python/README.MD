@@ -8,18 +8,6 @@ Use the web page  [unimrcp](http://www.unimrcp.org/) to explore documentations a
 
 
 
-FreeSwitchDemoGDF.py is for NLSML JSON format
-set up your umsgdf.xml
-```xml
-
-    <results
-      format="json"
-      indent="0"
-      replace-dots="true"
-      confidence-format="auto"
-      tag-format="semantics/json"
-   />
-```
 ## NOTE
 applicable freeswitch version is 1.8(if you build from source) or 1.10.5.release.8-1.el7 
 
@@ -133,9 +121,22 @@ python site-packages must contain
     freeswitch.py
 ```
 
-## Put following extentions to your dialplan xml
-lex V2
+## Aws Lex V2 instructions
+
+Configure expected NLSML format from unimrcp server on umslex.xml
+
+```xml
+
+    <results
+      format="JSON"
+      indent="0"
+      replace-dots="true"
+      confidence-format="auto"
+      tag-format="semantics/json"
+   />
 ```
+Put following extentions to your dialplan xml 
+```xml
     <extension name="493">
       <condition field="destination_number" expression="^493$">
 
@@ -149,8 +150,20 @@ lex V2
       </condition>
     </extension> 
 ```
-gdf
+## Dialogflow instructions
+Configure expected NLSML format of unimrcp server on umsgdf.xml
+```xml
+
+    <results
+      format="JSON"
+      indent="0"
+      replace-dots="true"
+      confidence-format="auto"
+      tag-format="semantics/json"
+   />
 ```
+Put following extentions to your dialplan xml 
+```xml
     <extension name="494">
       <condition field="destination_number" expression="^494$">
 
@@ -162,8 +175,58 @@ gdf
       </condition>
     </extension> 
 ```
-azure bot
+## Dialogflow CX  instructions
+Configure expected NLSML format of unimrcp server on umsgdf.xml for json
+```xml
+
+    <results
+      format="JSON"
+      indent="0"
+      replace-dots="true"
+      confidence-format="auto"
+      tag-format="semantics/json"
+   />
 ```
+Configure expected NLSML format of unimrcp server on umsgdf.xml for xml
+```xml
+
+    <results
+      format="standart"
+      indent="0"
+      replace-dots="true"
+      confidence-format="auto"
+      tag-format="semantics/xml"
+   />
+```
+
+```xml
+    <extension name="492">
+      <condition field="destination_number" expression="^492$">
+
+          <action application="answer"/>
+          <action application="set" data="tts_engine=unimrcp:gdf_mrcp-v2"/>
+          <action application="set" data="asr_engine=unimrcp:gdf_mrcp-v2"/>
+          <action application="set" data="GDF_PROJECT_ID=rosy-crawler-288816"/>
+          <action application="set" data="GDF_AGENT_ID=11f9f5bd-9754-407d-ac0a-3a7f6023589d"/>
+          <action application="set" data="GDF_LOCATION=global"/>
+          <action application="python" data="freeswitch_gdf_cx_xml"/>
+
+      </condition>
+    </extension> 
+```
+## Azure bot instructions
+Configure expected NLSML format of unimrcp server on umsgdf.xml for json
+```xml
+
+    <results
+      format="JSON"
+      indent="0"
+      replace-dots="true"
+      confidence-format="auto"
+      tag-format="semantics/json"
+   />
+```
+```xml
     <extension name="487">
       <condition field="destination_number" expression="^487$">
 
