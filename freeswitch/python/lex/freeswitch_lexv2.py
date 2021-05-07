@@ -7,7 +7,7 @@ import json
     This script interacts with Lex V2 API via UniMRCP server.
 
     * Revision: 1
-    * Date: apr 28, 2021
+    * Date: May 7, 2021
     * Vendor: Universal Speech Solutions LLC
 """ 
 
@@ -62,6 +62,7 @@ class LexV2App:
 
         self.grammars = "%s\n%s" % (self.compose_speech_grammar(), self.compose_dtmf_grammar())
         self.play_and_detect_speech()
+        
 
 
 
@@ -71,8 +72,7 @@ class LexV2App:
 
         data = "say:%s detect:%s %s%s" %(self.prompt,self.asr_engine,self.options,self.grammars)
         self.session.execute("play_and_detect_speech", data)
-        self.get_and_process_result()
-
+        self.result=self.session.getVariable("detect_speech_result")
        
  
 
@@ -134,8 +134,10 @@ class LexV2App:
     def get_prompt(self):
 
         """Retrieves prompt from the data returned by bot"""
-        
-        prompt = str(self.result['textResponse']['messages'][0]['content'])
+        result=json.loads(self.result)
+        prompt = result['textResponse']['messages'][0]['content']
+        prompt = str(prompt)
+        console_log("ERR",'got next prompt %s\n' % prompt)
         return prompt
 
  
@@ -143,24 +145,13 @@ class LexV2App:
     def check_dialog_completion(self):
 
         """Checks wtether the dialog is complete"""
-
+        result=json.loads(self.result)
         complete = False
-        if str(self.result['intentResult']['sessionState']['dialogAction']['type']) == "Close":
+        if result['intentResult']['sessionState']['dialogAction']['type'] == "Close":
             complete = True
             console_log("info",'got end of conversation %s' % complete)
         return complete
 
-
-    def get_and_process_result(self):
-
-        """Get and process result from bot"""
-
-        result = self.session.getVariable("detect_speech_result")
-        if result:
-            if 'Completion-Cause' not in str(result):
-                result = json.loads(result)
-                if len(result)>1:
-                    self.result = result
         
             
 
@@ -171,20 +162,32 @@ class LexV2App:
         """Interacts with the caller in a loop until the dialog is complete"""
         
         self.trigger_welcome_intent()
-        if self.result:
-           self.prompt = self.get_prompt()
-        while (self.session.ready()):
+
+        if 'Completion-Cause' in str(self.result):
+            console_log("ERR",'failed to trigger welcome intent')
+            return
+
+        processing = False
+
+        self.prompt = self.get_prompt()
+
+        if self.prompt:
+            processing = True
+    
+        while processing:
             
             self.detect_intent()
-            if self.result:
-                if self.check_dialog_completion():
-                    break
+            processing = True
+            
+            if 'Completion-Cause' not in str(self.result):
                 
-                self.prompt = self.get_prompt()
+                if self.check_dialog_completion():
+                    processing = False
+                    
+                self.prompt = self.get_prompt()    
 
-            else:
-                console_log("ERR",'no result %s\n' % self.result)
-                break
+            elif '001' not in str(self.result) and '002' not in str(self.result):
+                    processing == False
 
         self.session.set_tts_params(self.tts_engine, ' ')
         self.session.speak("Thank you.See you next time. ")

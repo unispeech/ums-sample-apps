@@ -16,7 +16,7 @@
 """
 
 
-import xml.etree.ElementTree as ET
+import json
 from freeswitch import *
       
 
@@ -38,7 +38,7 @@ class GdfCxApp:
         self.agent_id = self.session.getVariable('GDF_AGENT_ID')
         self.location = self.session.getVariable('GDF_LOCATION')
         self.result= None 
-        
+        self.cause = None
 
 
 
@@ -80,9 +80,10 @@ class GdfCxApp:
         data = "say:%s detect:%s %s%s" %(self.prompt,self.asr_engine,self.options,self.grammars)
         self.session.execute("play_and_detect_speech", data)
         self.result=self.session.getVariable("detect_speech_result")
-
-       
- 
+        
+        
+        
+        
 
     def compose_speech_grammar(self):
 
@@ -151,11 +152,13 @@ class GdfCxApp:
     def get_prompt(self):
 
         """Retrieves prompt from the data returned by bot"""
-        prompt=' '
-        root = ET.fromstring(self.result)
-        messages_list = root.findall('.//instance/response_messages/text/text')
-        for message in messages_list:
-            prompt+=message.text
+        prompt=''
+        result=json.loads(self.result)
+        responseMessages=result['responseMessages']
+        for message in responseMessages:
+            if 'text' in message:
+                prompt += message['text']['text'][0]   
+        prompt = str(prompt)
         console_log("ERR",'got next prompt %s\n' % prompt)
         return prompt
 
@@ -164,16 +167,14 @@ class GdfCxApp:
     def check_dialog_completion(self):
 
         """Checks wtether the dialog is complete"""
-        root = ET.fromstring(self.result)
-        current_page_display_name = root.find('.//instance/current_page/display_name')
+        result=json.loads(self.result)
+        current_page_display_name =result['currentPage']['displayName']
         complete = False
-        if current_page_display_name.text == "End Session":
-            console_log("ERR",'got current page display name: %s\n' % current_page_display_name.text)
+        if current_page_display_name == "End Session":
+            console_log("ERR",'got current page display name: %s\n' % str(current_page_display_name))
             complete = True
         return complete
-                
-        
-            
+          
 
         
 
@@ -200,7 +201,7 @@ class GdfCxApp:
             processing = True
             
             if 'Completion-Cause' not in str(self.result):
-                console_log("ERR",'got current page display name: %s\n' % self.check_dialog_completion())
+                
                 if self.check_dialog_completion():
                     processing = False
                     

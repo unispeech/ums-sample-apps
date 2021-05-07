@@ -263,7 +263,7 @@ class GdfCxApp:
 
         """Checks wtether the dialog is complete"""
         
-        current_page_display_name = agi.get_variable('RECOG_INSTANCE(0/0/current_page/display_name)')
+        current_page_display_name = agi.get_variable('RECOG_INSTANCE(0/0/currentPage/displayName)')
 
         complete = False
 
