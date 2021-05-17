@@ -65,7 +65,7 @@ Start FreeSWITCH
 ## Configuring UniMRCP profile
 
 Create a new UniMRCP profile ums-v2.xml, located in /usr/local/freeswitch/etc/freeswitch/mrcp_profiles, and pointing to the UniMRCP server configured in the previous step. In the example below, the IP address of UniMRCP Server is 10.128.0.4, and the IP address of FreeSWITCH is 10.128.0.5.
-```
+```xml
 <include>
   <!-- UniMRCP Server MRCPv2 -->
   <profile name="ums-v2" version="2">
@@ -113,7 +113,7 @@ Create a new UniMRCP profile ums-v2.xml, located in /usr/local/freeswitch/etc/fr
 Remove all other sample profiles located in the same directory.
 Afterwards, in the configuration file unimrcp.conf.xml, located in /usr/local/freeswitch/etc/freeswitch/autoload_configs directory, set the name of the configured profile.
 
-```
+```xml
 <configuration name="unimrcp.conf" description="UniMRCP Client">
   <settings>
     <!-- UniMRCP profile to use for TTS -->
@@ -140,7 +140,7 @@ Afterwards, in the configuration file unimrcp.conf.xml, located in /usr/local/fr
 ```
 ## Put following extentions to your dialplan xml
 
-```
+```xml
     <extension name="494">
       <condition field="destination_number" expression="^494$">
 
