@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<!--
+ Azure echo bot Application
+    * Revision: 2
+    * Date: May 5, 2021
+    * Vendor: Universal Speech Solutions LLC
+-->
+<vxml version="2.1" xmlns="http://www.w3.org/2001/vxml">
+  <script>
+      <![CDATA[
+       
+        function replacer(string){
+          var entities = {
+            "&quot;": '"',
+            "&apos;": "'",
+            "\n": " "
+          };
+          function getMatch(match){
+            return entities[match];
+          }
+          return string.replace(/&quot;|&apos;/g,getMatch);
+        }
+
+        function main(){
+          this.result;
+          this.speak="Welcome to Azurebot. <break time=\"300ms\"/> How can I help you?";
+          this.finalMessage = "<break time=\"100ms\"/>Thank you. See you next time.";
+
+          if(application.lastresult$){
+            replaced = replacer(application.lastresult$[0].interpretation)
+            this.result = JSON.parse(replaced);
+            this.speak=this.result.speak;
+          }
+        
+
+        }
+
+           
+      ]]> 
+      
+      
+      
+  </script>
+
+  <var name="app" expr="new main()"/> 
+
+  <form id="welcome">
+    <property name="timeout" value="10s"/>
+    <block>
+      <prompt><value expr="app.speak"/></prompt>
+      <goto next="#main"/>
+    </block>
+  </form>
+
+  <form id="main">
+    <property name="recordutterance" value="false"/>
+    <property name="timeout" value="10s"/>
+
+    <field>
+      <!-- <grammar mode="voice" type="application/srgs+xml" src="builtin:speech/transcribe"  /> -->
+      <grammar src="builtin:speech/transcribe"/>
+      
+      <filled> 
+        <var  name="app" expr="new main()"/> 
+        
+        <log>got result <value expr="app.result"/></log> 
+        <log>got speak <value expr="app.speak"/></log>
+        <prompt><value expr="app.speak"/></prompt>
+
+      </filled>
+
+      <catch event="noinput nomatch">
+         <prompt><value expr="app.speak +'nomatch noinput'"/></prompt>
+         <reprompt/>
+      </catch>
+      <catch event="noinput nomatch" count="2">
+        <prompt><value expr="app.finalMessage+'nomatch noinput'"/></prompt>
+        <disconnect/>
+      </catch>
+    </field>
+
+    <block>
+      <goto next="#main"/>
+    </block>
+  </form>
+
+
+  <catch>
+    <log>Caught event: <value expr="_event"/>, message: <value expr="_message"/></log>
+  </catch>
+</vxml>
