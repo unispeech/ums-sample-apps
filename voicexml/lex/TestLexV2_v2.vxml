@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<!--
+ AWS Lex V2 Application
+    * Revision: 2
+    * Date: May 20, 2021
+    * Vendor: Universal Speech Solutions LLC
+
+    This Vxml Application interacts with Lex V2 API via UniMRCP server.
+
+
+
+-->
+<vxml version="2.1" xmlns="http://www.w3.org/2001/vxml" >
+ 
+  <!--Script to replace characters in returned data -->
+  <script>
+      <![CDATA[
+        function replacer(string){
+          var entities = {
+            "&quot;": '"',
+            "&apos;": "'",
+            "\n": " "
+          };
+          function getMatch(match){
+            return entities[match];
+          }
+          return string.replace(/&quot;|&apos;/g,getMatch);
+        }
+               
+       
+      ]]> 
+       
+      
+
+  </script>
+  <!-- Generate initial  objects to store grammars,returned data,messages -->
+  <var name="message" expr="'Welcome to orderflowers bot. How can i help you'"/> 
+  <var name="language" expr="'en-US'"/> 
+  <var name="botName" expr="'QL2JKXN9BI'"/> 
+  <var name="botAlias" expr="'TSTALIASID'"/> 
+  <var name="grammar" expr="'builtin:speech/transcribe?language=' + language + ';bot-name=' + botName + ';alias=' + botAlias + ';'"/> 
+  
+  <!-- initial form-->
+  <form  id="welcome">
+    <property name="recordutterance" value="false"/>
+    <property name="timeout" value="10s"/>
+
+    <field name="Welcome">
+      
+      <!-- Create bultin grammar based on default speech grammar bot settings and additional params-->
+      <grammar  srcexpr="grammar + 'message=' + message"/> 
+
+     <filled>
+        <!-- store json parsed field response data to result variable-->
+        <var name="result" expr="JSON.parse(replacer(Welcome))"/>
+        <!-- log  result variable-->  
+        <log>got result: <value expr="result"/></log> 
+        <!-- check if result textResponse field contain message. 
+        if true assign  content of message field to message variable-->  
+        <if cond="result.textResponse.hasOwnProperty('messages')">
+          <log>got welcome message : <value expr="result.textResponse.messages[0].content"/></log> 
+          <assign name="message" expr="result.textResponse.messages[0].content"/>
+        <else/>
+          <assign name="message" expr="'There is no response message.'"/>
+        </if>
+
+        <!-- prompt response message-->
+        <prompt><value expr="message"/></prompt>
+        <!-- check end of  dialog seession  -->
+        <if cond="result.intentResult.sessionState.dialogAction.type==='Close'">
+          <log>got end of session : <value expr="result.intentResult.sessionState.dialogAction.type"/></log>
+          <assign name="message" expr="' Thank you. See you next time. Dialogaction is Close'"/>
+          <goto next="#exit"/>
+        </if> 
+        
+      </filled>
+      
+    </field>
+    <block>
+      
+      <goto next="#main"/>
+    </block>
+  </form>
+
+
+  <!-- main form in loop-->
+  <form  id="main">
+    <property name="recordutterance" value="false"/>
+    <property name="timeout" value="10s"/>
+    <property name="incompletetimeout" value="15000ms"/>
+    <field name="Main">
+      <!-- Create bultin grammar based on default speech grammar bot settings and additional params-->
+      <grammar mode="voice" srcexpr="grammar"/>
+      <filled>
+        <!-- sore new data to result variable-->
+        <var name="result" expr="JSON.parse(replacer(Main))"/>
+        <log>got result: <value expr="result"/></log>   
+        <!-- check if result textResponse field contain message. 
+        if true assign  content of message field to message variable--> 
+        <if cond="result.textResponse.hasOwnProperty('messages')">
+          <log>got welcome message : <value expr="result.textResponse.messages[0].content"/></log> 
+          <assign name="message" expr="result.textResponse.messages[0].content"/>
+        <else/>
+          <assign name="message" expr="'There is no response messages.'"/>
+        </if>
+
+        <prompt><value expr="message"/></prompt>        
+
+        <!-- check end of  dialog seession  -->
+        <if cond="result.intentResult.sessionState.dialogAction.type==='Close'">
+          <log>got end of session : <value expr="result.intentResult.sessionState.dialogAction.type"/></log>
+          <assign name="message" expr="'Thank you. See you next time. Dialogaction is Close'"/>
+          <goto next="#exit"/>
+        </if>
+       
+      </filled>
+      <!-- catch no input,no match prompt earlier stored response messages-->
+      <catch event="noinput nomatch">
+         <prompt><value expr="message"/></prompt>
+         <reprompt/>
+      </catch>
+      <!-- if error accured prompt error message and exit-->
+      <catch event="error">
+         <prompt><value expr="_message"/></prompt>
+         <goto next="#exit"/>
+      </catch>
+    </field>
+
+    
+    <block>
+      <goto next="#main"/>
+    </block>
+  </form>
+  
+
+  <form id="exit">
+    <block>
+      <prompt><value expr="message"/></prompt>
+      <disconnect/>
+    </block>
+  </form>
+
+  <catch>
+    <log>Caught event: <value expr="_event"/>, message: <value expr="_message"/></log>
+  </catch>
+</vxml>

@@ -1,9 +1,17 @@
 <?xml version="1.0"?>
 <!--
- AWS Lex V2cvxml Application
+ AWS Lex V2 Application
     * Revision: 2
-    * Date: May 5, 2021
+    * Date: May 20, 2021
     * Vendor: Universal Speech Solutions LLC
+
+    This Vxml Application interacts with Lex V2 API via UniMRCP server .
+    This script created for Aspect Voxeo Prophecy 20 server.
+    Set your AWS LEX credentials in LexBotSettings.json
+
+
+
+
 -->
 <vxml version="2.1" xmlns="http://www.w3.org/2001/vxml" >
  
@@ -14,6 +22,7 @@
         function  main(){
           this.result;
           this.WelcomeMessage="Welcome to orderflowers bot. How can i help you"
+          this.finalMessage="Welcome to orderflowers bot. How can i help you"
           this.responseMessages=" ";
           this.endOfSession=false;
           this.botSettings="";
@@ -139,7 +148,7 @@
 
   <form id="exit">
     <block>
-      <prompt><break time="100ms"/>Thank you. See you next time.</prompt>
+      <prompt><value expr="app.finalMessage"/></prompt>
       <disconnect/>
     </block>
   </form>
