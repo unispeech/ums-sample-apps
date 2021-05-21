@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!--
+ Sample vxml Application
+    * Revision: 2
+    * Date: May 22, 2021
+    * Vendor: Universal Speech Solutions LLC
+    This Vxml Application demonstrates any interaction via UniMRCP server.
+-->
+<vxml version="2.1" xmlns="http://www.w3.org/2001/vxml">
+  
+  <var name="message" expr="Welcome. Say something i will repeat your phrase."/> 
+  <form id="welcome">
+    <property name="timeout" value="10s"/>
+    <block>
+      <prompt><value expr="app.prompt"/></prompt>
+      <goto next="#main"/>
+    </block>
+  </form>
+
+  <form id="main">
+    <property name="recordutterance" value="false"/>
+    <property name="timeout" value="10s"/>
+
+    <field>
+      <grammar src="builtin:speech/transcribe"/>
+      
+      <filled> 
+        <log>got next message : <value expr="application.lastresult$[0].utterance"/></log> 
+        <assign name="message" expr="application.lastresult$[0].utterance"/>
+        <prompt><value expr="message"/></prompt>
+
+      </filled>
+
+      <catch event="noinput nomatch">
+         <prompt><value expr="message +'nomatch noinput'"/></prompt>
+         <reprompt/>
+      </catch>
+      <catch event="noinput nomatch" count="2">
+        <assign name="message" expr="Thank you. See you next time."/>
+        <prompt><value expr="message + 'nomatch noinput'"/></prompt>
+        <disconnect/>
+      </catch>
+    </field>
+
+    <block>
+      <goto next="#main"/>
+    </block>
+  </form>
+
+
+  <catch>
+    <log>Caught event: <value expr="_event"/>, message: <value expr="_message"/></log>
+  </catch>
+</vxml>
