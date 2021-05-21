@@ -4,6 +4,9 @@
     * Revision: 2
     * Date: May 5, 2021
     * Vendor: Universal Speech Solutions LLC
+    This Vxml Application interacts with Google Dialogflow cx API via UniMRCP server.
+    This script created for Aspect Voxeo Prophecy 20 server.
+    Set your AWS LEX credentials in GdfCxAgentSettings.json
 -->
 
 <vxml version="2.1" xmlns="http://www.w3.org/2001/vxml" >
@@ -14,6 +17,7 @@
         function  main(data){
           this.result;
           this.responseMessages="";
+          this.finalResponseMessages="Thank you. See you next time."
           this.endOfSession=false;
           this.agentSettings="";
           this.WelcomeGrammar="";
@@ -138,7 +142,7 @@
 
   <form id="exit">
     <block>
-      <prompt><break time="100ms"/>Thank you. See you next time.</prompt>
+      <prompt><value expr="app.finalResponseMessages"/></prompt>
       <disconnect/>
     </block>
   </form>

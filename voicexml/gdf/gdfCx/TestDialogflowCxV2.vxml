@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<!--
+ Google Dialogflow CX vxml Application
+    * Revision: 2
+    * Date: May 22, 2021
+    * Vendor: Universal Speech Solutions LLC
+    This Vxml Application interacts with Google Dialogflow cx API via UniMRCP server.
+-->
+<vxml version="2.1" xmlns="http://www.w3.org/2001/vxml">
+  <!--Script to replace characters in returned data -->
+    <script>
+      <![CDATA[
+        function replacer(string){
+          var entities = {
+            "&quot;": '"',
+            "&apos;": "'",
+            "\n": " "
+          };
+          function getMatch(match){
+            return entities[match];
+          }
+          return string.replace(/&quot;|&apos;/g,getMatch);
+        }
+               
+       
+      ]]> 
+       
+      
+
+  </script>
+  <!-- Generate initial  objects to store grammars,returned data,messages -->
+  <var name="message"/>
+  <var name="welcomeEvent" expr="'00000000-0000-0000-0000-000000000000'"/> 
+  <var name="projectid" expr="'rosy-crawler-288816'"/> 
+  <var name="agent" expr="'11f9f5bd-9754-407d-ac0a-3a7f6023589d'"/> 
+  <var name="location" expr="'global'"/> 
+  <var name="eventGrammar" expr="'builtin:event/' + welcomeEvent + '?projectid=' + projectid + ';agent=' + agent + ';location=' + location + ';'"/> 
+  <var name="grammar" expr="'builtin:speech/transcribe?projectid=' + projectid + ';agent=' + agent + ';location=' + location + ';'"/> 
+  
+  <!-- initial form-->
+  <form  id="welcome">
+    <property name="recordutterance" value="false"/>
+    <property name="timeout" value="10s"/>
+
+    <field name="Welcome">
+      
+      <!-- Create bultin grammar based on default speech grammar bot settings and additional params-->
+      <grammar  srcexpr="eventGrammar"/> 
+
+     <filled>
+        <!-- store json parsed field response data to result variable-->
+        <var name="result" expr="JSON.parse(replacer(Welcome))"/>
+        <!-- log  result variable-->  
+        <log>got result: <value expr="result"/></log> 
+        <log>got welcome message : <value expr="result.responseMessages[0].text.text[0]"/></log> 
+        <assign name="message" expr="result.responseMessages[0].text.text[0]"/>
+        
+
+        <!-- prompt response message-->
+        <prompt><value expr="message"/></prompt>
+        <!-- check end of  dialog seession  -->
+        <if cond="result.currentPage.displayName==='End Session'">
+          <log>got end of session : <value expr="result.currentPage.displayName"/></log>
+          <assign name="message" expr="' Thank you. See you next time. currentPage is End Session'"/>
+          <goto next="#exit"/>
+        </if> 
+        
+      </filled>
+      
+    </field>
+    <block>
+      
+      <goto next="#main"/>
+    </block>
+  </form>
+
+
+  <!-- main form in loop-->
+  <form  id="main">
+    <property name="recordutterance" value="false"/>
+    <property name="timeout" value="10s"/>
+    <property name="incompletetimeout" value="15000ms"/>
+    <field name="Main">
+      <!-- Create bultin grammar based on default speech grammar bot settings and additional params-->
+      <grammar mode="voice" srcexpr="grammar"/>
+      <filled>
+        <!-- sore new data to result variable-->
+        <var name="result" expr="JSON.parse(replacer(Main))"/>
+        <!-- log  result variable-->  
+        <log>got result: <value expr="result"/></log> 
+        <log>got welcome message : <value expr="result.responseMessages[0].text.text[0]"/></log> 
+        <assign name="message" expr="result.responseMessages[0].text.text[0]"/>
+
+        <prompt><value expr="message"/></prompt>        
+
+        <!-- check end of  dialog seession  -->
+        <if cond="result.currentPage.displayName==='End Session'">
+          <log>got end of session : <value expr="result.currentPage.displayName"/></log>
+          <assign name="message" expr="' Thank you. See you next time. current page display name is End Session'"/>
+          <goto next="#exit"/>
+        </if> 
+       
+      </filled>
+      <!-- catch no input,no match prompt earlier stored response messages-->
+      <catch event="noinput nomatch">
+         <prompt><value expr="message"/></prompt>
+         <reprompt/>
+      </catch>
+      <!-- if error accured prompt error message and exit-->
+      <catch event="error">
+         <prompt><value expr="_message"/></prompt>
+         <goto next="#exit"/>
+      </catch>
+    </field>
+
+    
+    <block>
+      <goto next="#main"/>
+    </block>
+  </form>
+  
+
+  <form id="exit">
+    <block>
+      <prompt><value expr="message"/></prompt>
+      <disconnect/>
+    </block>
+  </form>
+
+  <catch>
+    <log>Caught event: <value expr="_event"/>, message: <value expr="_message"/></log>
+  </catch>
+</vxml>
