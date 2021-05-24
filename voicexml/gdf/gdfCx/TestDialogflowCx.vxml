@@ -5,8 +5,11 @@
     * Date: May 5, 2021
     * Vendor: Universal Speech Solutions LLC
     This Vxml Application interacts with Google Dialogflow cx API via UniMRCP server.
-    This script created for Aspect Voxeo Prophecy 20 server.
     Set your AWS LEX credentials in GdfCxAgentSettings.json
+
+    For using  with Aspect Voxeo Prophecy server 
+    add "builtin:grammar" to grammar 
+    * this.SpeechGrammar ="builtin:grammar/builtin:speech/transcribe?"
 -->
 
 <vxml version="2.1" xmlns="http://www.w3.org/2001/vxml" >
