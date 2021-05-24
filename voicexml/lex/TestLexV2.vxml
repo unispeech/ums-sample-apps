@@ -23,7 +23,7 @@
         function  main(){
           this.result;
           this.WelcomeMessage="Welcome to orderflowers bot. How can i help you"
-          this.finalMessage="Welcome to orderflowers bot. How can i help you"
+          this.finalMessage="Thank you.See you next time."
           this.responseMessages=" ";
           this.endOfSession=false;
           this.botSettings="";

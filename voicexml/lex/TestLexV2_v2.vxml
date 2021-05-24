@@ -66,7 +66,7 @@
 
         <!-- prompt response message-->
         <prompt><value expr="message"/></prompt>
-        <!-- check end of  dialog seession  -->
+        <!-- check end of  dialog session  -->
         <if cond="result.intentResult.sessionState.dialogAction.type==='Close'">
           <log>got end of session : <value expr="result.intentResult.sessionState.dialogAction.type"/></log>
           <assign name="message" expr="' Thank you. See you next time. Dialogaction is Close'"/>
@@ -106,7 +106,7 @@
 
         <prompt><value expr="message"/></prompt>        
 
-        <!-- check end of  dialog seession  -->
+        <!-- check end of  dialog session  -->
         <if cond="result.intentResult.sessionState.dialogAction.type==='Close'">
           <log>got end of session : <value expr="result.intentResult.sessionState.dialogAction.type"/></log>
           <assign name="message" expr="'Thank you. See you next time. Dialogaction is Close'"/>
