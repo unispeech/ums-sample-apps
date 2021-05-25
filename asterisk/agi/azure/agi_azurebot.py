@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 """
     Asterisk AGI Azure Echo bot  Demo Application
     This script interacts with Azure echo bot via UniMRCP server.
@@ -52,8 +52,10 @@ class AzurebotApp:
         """Retrieves message text from the data returned by bot"""
         speak = agi.get_variable(
             'RECOG_INSTANCE(0/0/speak)')
-        if isinstance(speak, str):
-            speak = unicode(speak, 'utf-8')
+            
+        """Uncomment this line if your python version is 2.7"""
+        # if isinstance(speak, str):
+        #     speak = unicode(speak, 'utf-8')
         agi.verbose('got message %s' % speak)
         return speak
 

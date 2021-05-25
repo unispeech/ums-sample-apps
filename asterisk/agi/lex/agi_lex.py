@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 """
     Asterisk AGI Lex  Application
 
@@ -53,8 +53,12 @@ class LexApp:
         """Retrieves message text from the data returned by bot"""
         message = agi.get_variable(
             'RECOG_INSTANCE(0/0/message)')
-        if isinstance(message, str):
-            message = unicode(message, 'utf-8')
+
+        """Uncomment this line if your python version is 2.7"""
+        
+        # if isinstance(message, str):
+        #     message = unicode(message, 'utf-8')
+        
         agi.verbose('got message %s' % message)
         return message
 

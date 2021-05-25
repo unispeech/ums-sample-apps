@@ -73,4 +73,10 @@ xml example
 ```bash
 prompt = agi.get_variable('RECOG_INSTANCE(0/0/response_Messages/0/text/text/0)')
 ```
-
+ 
+Uncomment this line if your python version is 2.7 
+example
+```python
+        if isinstance(prompt, str):
+        prompt = unicode(prompt, 'utf-8')
+```

@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 
 """
 
@@ -248,10 +248,10 @@ class GdfCxApp:
 
         prompt = agi.get_variable('RECOG_INSTANCE(0/0/responseMessages/0/text/text/0)') + agi.get_variable('RECOG_INSTANCE(0/0/responseMessages/1/text/text/0)')
         
-
-        if isinstance(prompt, str):
+        """Uncomment this line if your python version is 2.7"""
+        # if isinstance(prompt, str):
            
-            prompt = unicode(prompt, 'utf-8')
+        #     prompt = unicode(prompt, 'utf-8')
 
         agi.verbose('got prompt %s' % prompt)
 

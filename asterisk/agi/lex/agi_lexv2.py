@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 """
     Asterisk AGI Lex V2 Application
 
@@ -120,8 +120,11 @@ class LexV2App:
     def get_prompt(self):
         """Retrieves prompt from the data returned by bot"""
         prompt = agi.get_variable('RECOG_INSTANCE(0/0/textResponse/messages/0/content)')
-        if isinstance(prompt, str):
-            prompt = unicode(prompt, 'utf-8')
+
+        """Uncomment this line if your python version is 2.7"""
+        # if isinstance(prompt, str):
+        #     prompt = unicode(prompt, 'utf-8')
+        
         agi.verbose('got prompt %s' % prompt)
         return prompt
 
