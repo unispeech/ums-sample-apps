@@ -34,7 +34,7 @@
   <var name="projectid" expr="'rosy-crawler-288816'"/> 
   <var name="agent" expr="'11f9f5bd-9754-407d-ac0a-3a7f6023589d'"/> 
   <var name="location" expr="'global'"/> 
-  <var name="eventGrammar" expr="'builtin:event/' + welcomeEvent + '?projectid=' + projectid + ';agent=' + agent + ';location=' + location + ';'"/> 
+  <var name="eventGrammar" expr="'builtin:intent/' + welcomeEvent + '?projectid=' + projectid + ';agent=' + agent + ';location=' + location + ';'"/> 
   <var name="grammar" expr="'builtin:speech/transcribe?projectid=' + projectid + ';agent=' + agent + ';location=' + location + ';'"/> 
   
   <!-- initial form-->

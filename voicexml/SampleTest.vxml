@@ -12,7 +12,7 @@
   <form id="welcome">
     <property name="timeout" value="10s"/>
     <block>
-      <prompt><value expr="app.prompt"/></prompt>
+      <prompt><value expr="message"/></prompt>
       <goto next="#main"/>
     </block>
   </form>

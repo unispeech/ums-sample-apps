@@ -62,7 +62,7 @@
                   this.agentSettings += key + "=" + data[key]+";";
                 } 
               }       
-              this.WelcomeGrammar="builtin:event/"+welcomeFlow+"?"+this.agentSettings;       
+              this.WelcomeGrammar="builtin:intent/"+welcomeFlow+"?"+this.agentSettings;       
               this.SpeechGrammar="builtin:speech/transcribe?"+this.agentSettings;
               this.DtmfGrammar="builtin:dtmf/digits?"+this.agentSettings;
           }

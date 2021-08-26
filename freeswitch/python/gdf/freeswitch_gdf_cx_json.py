@@ -40,7 +40,7 @@ class GdfCxApp:
 
         """Triggers a welcome intent"""
 
-        grammar = 'builtin:event/00000000-0000-0000-0000-000000000000'
+        grammar = 'builtin:intent/00000000-0000-0000-0000-000000000000'
         separator = '?'
         if self.project_id:
             grammar = self.append_grammar_parameter(grammar, "projectid", self.project_id, separator)
@@ -118,7 +118,7 @@ class GdfCxApp:
 
         """Composes a built-in event grammar"""
 
-        grammar = 'builtin:event/%s' % intent
+        grammar = 'builtin:intent/%s' % intent
         separator = '?'
         if value:
             grammar = self.append_grammar_parameter(grammar, "value", value, separator)

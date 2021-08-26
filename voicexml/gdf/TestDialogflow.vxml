@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
- Google Dialogflow CX vxml Application
+ Google Dialogflow  vxml Application
     * Revision: 2
     * Date: May 22, 2021
     * Vendor: Universal Speech Solutions LLC
@@ -56,7 +56,7 @@
         <!-- check end of  dialog seession  -->
         <if cond="result.all_required_params_present==='true'">
           <log>got end of session : <value expr="result.all_required_params_present"/></log>
-          <assign name="message" expr="' Thank you. See you next time. currentPage is End Session'"/>
+          <assign name="message" expr="' Thank you. See you next time. current atate is End Session'"/>
           <goto next="#exit"/>
         </if> 
         
