@@ -3,8 +3,8 @@
     Asterisk AGI Azure Echo bot  Demo Application
     This script interacts with Azure echo bot via UniMRCP server.
 
-    * Revision: 1
-    * Date: May 5, 2021
+    * Revision: 2
+    * Date: Jun 27, 2022
     * Vendor: Universal Speech Solutions LLC
 """
 
@@ -22,12 +22,30 @@ class AzurebotApp:
         self.status = None
         self.cause = None
         self.prompt = 'Welcome to Azure Echo bot. Say something i will repeat your phrase?'
+        self.method=None
+
+
 
     def detect_intent(self):
         """Performs a streaming intent detection"""
-        self.grammar = "builtin:speech/transcribe?" 
+        self.grammar = self.compose_speech_grammar()
         self.synth_and_recog()
         
+    def compose_speech_grammar(self):
+
+        """Composes a built-in speech grammar"""
+
+        grammar = 'builtin:speech/transcribe'
+        separator = '?'
+        if self.method:
+            grammar = self.append_grammar_parameter(grammar, "method", self.method, separator)
+            separator = ';'
+        return grammar
+
+    def append_grammar_parameter(self, grammar, name, value, separator):
+        """Appends a name/value parameter to the specified grammar"""
+        grammar += "%s%s=%s" % (separator, name, value)
+        return grammar
 
     def synth_and_recog(self):
         """This is an internal function which calls SynthAndRecog"""
@@ -61,6 +79,7 @@ class AzurebotApp:
 
 
     def run(self):
+        self.method="listen"
         processing = True
         while processing:
             self.detect_intent()

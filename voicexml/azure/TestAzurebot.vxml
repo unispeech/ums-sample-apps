@@ -2,7 +2,7 @@
 <!--
  Azure echo bot Application
     * Revision: 2
-    * Date: May 5, 2021
+    * Date: Jun 27, 2022
     * Vendor: Universal Speech Solutions LLC
 -->
 <vxml version="2.1" xmlns="http://www.w3.org/2001/vxml">
@@ -41,7 +41,7 @@
     <property name="timeout" value="10s"/>
 
     <field>
-      <grammar src="builtin:speech/transcribe?"/>
+      <grammar src="builtin:speech/transcribe?method=listen"/>
 
       <filled> 
         <assign  name="app" expr="new main()"/> 

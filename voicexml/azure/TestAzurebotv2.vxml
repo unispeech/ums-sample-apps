@@ -58,7 +58,7 @@
 
     <field>
       <!-- <grammar mode="voice" type="application/srgs+xml" src="builtin:speech/transcribe"  /> -->
-      <grammar src="builtin:speech/transcribe"/>
+      <grammar src="builtin:speech/transcribe?method=listen"/>
       
       <filled> 
         <var  name="app" expr="new main()"/> 
