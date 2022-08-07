@@ -78,7 +78,7 @@ class SoundhoundBS_APP:
 
         """This is an internal function which composes request info"""
         if self.domain:
-            REQUEST_INFO["Domains"]={"only":{"DomainNames":[self.domain]}}
+            REQUEST_INFO["Domains"]={"Only":{"DomainNames":[self.domain]}}
             
         
 
