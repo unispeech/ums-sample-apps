@@ -12,9 +12,10 @@
 asterisk extensions
 
 exten=> 7649,1,Answer
-exten=> 7649,2,Set(SOUNDHOUNDBSDOMAIN=Weather)
-exten=> 7649,3,agi(soundhoundbs/agi_soundhoundbs.py)
-exten=> 7649,4,Hangup()
+exten=> 7649,2,Set(SOUNDHOUNDBSDOMAINS=Query Glue,Map Data,Weather)
+exten=> 7649,3,Verbose(${SOUNDHOUNDBSDOMAINS} )
+exten=> 7649,4,agi(github/asterisk/agi/soundhoundbs/agi_soundhoundbs.py)
+exten=> 7649,5,Hangup()
 
 
 """
@@ -35,7 +36,7 @@ class SoundhoundBS_APP:
         """Constructor"""
 
         self.options = options
-        self.domain = agi.get_variable('SOUNDHOUNDBSDOMAIN')
+        self.domains = agi.get_variable('SOUNDHOUNDBSDOMAINS')
         self.status = None
         self.cause = None
         self.prompt="Welcome to soundhound bot services"
@@ -48,7 +49,7 @@ class SoundhoundBS_APP:
     def detect_intent(self):
 
         """Performs a streaming intent detection"""
-        self.grammars = "%s,%s" % (self.compose_speech_grammar(), self.compose_dtmf_grammar())
+        self.grammars = "%s$%s" % (self.compose_speech_grammar(), self.compose_dtmf_grammar())
         self.synth_and_recog()
 
 
@@ -77,8 +78,11 @@ class SoundhoundBS_APP:
     def compose_request_info(self):
 
         """This is an internal function which composes request info"""
-        if self.domain:
-            REQUEST_INFO["Domains"]={"Only":{"DomainNames":[self.domain]}}
+        if self.domains:
+            domains=self.domains.split(',')
+            agi.verbose('got domains %s' % domains)
+            
+            REQUEST_INFO["Domains"]={"Only":{"DomainNames":domains}}
             
         
 
@@ -101,7 +105,7 @@ class SoundhoundBS_APP:
         
     def escape(self):
         """This is an internal function which escape/unescape request info fields"""
-        return json.dumps(REQUEST_INFO).replace('"', '\\\\\\\"')
+        return json.dumps(REQUEST_INFO).replace('"', '\\\\\\"')
 
 
     def compose_speech_grammar(self):
@@ -189,7 +193,7 @@ class SoundhoundBS_APP:
  
 
 agi = AGI()
-options = 'plt=1&b=1&sct=1000&sint=15000&nit=15000&nif=json'
+options = 'plt=1&b=1&sct=1000&sint=15000&nit=15000&nif=json&gd=$'
 soundhoundbs_app = SoundhoundBS_APP(options)
 soundhoundbs_app.run()
 agi.verbose('exiting')
