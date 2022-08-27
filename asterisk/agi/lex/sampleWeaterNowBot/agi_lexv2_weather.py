@@ -36,8 +36,11 @@ class LexV2App:
         self.region = agi.get_variable('AWS_REGION')
         self.bot_id = agi.get_variable('AWS_BOT_ID')
         self.alias_id = agi.get_variable('AWS_ALIAS_ID')
-        self.message = "Welcome to Weather bot"
+        self.message = None
+        
+        """Specify intent name if you want to trigger and intent"""
         self.intent_name = None
+        
         self.Longitude='44.4454'
         self.Latitude='40.1797'
         self.status = None
@@ -45,7 +48,6 @@ class LexV2App:
 
     def trigger_WeatherNow_intent(self):
         """Triggers a welcome intent"""
-#        grammar = 'builtin:event/welcome'
         grammar = 'builtin:speech/transcribe'
         separator = '?'
         if self.bot_id:
