@@ -175,7 +175,7 @@ class SoundhoundBS_APP:
         grammar += "%s%s=%s" % (separator, name, value)
         return grammar
 
-    def trigger_conversation_state_field(self,field):
+    def trigger_conversation_state(self,field):
         """Retrieves conversationState field from the data returned by bot"""
 
         data=agi.get_variable('RECOG_INSTANCE(0/0/AllResults/0/ConversationState/%s)' %field)
@@ -218,7 +218,7 @@ class SoundhoundBS_APP:
             if self.status == 'OK':
                 if self.cause == '000':
                     self.prompt = self.get_prompt()
-                    self.trigger_conversation_state_field('ConversationStateTime')
+                    self.trigger_conversation_state('ConversationStateTime')
                 elif self.cause != '001' and self.cause != '002':
                     processing = False
             elif self.cause != '001' and self.cause != '002':
