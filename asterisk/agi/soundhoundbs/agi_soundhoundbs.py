@@ -9,14 +9,21 @@
     * Date: July  30, 2022
     * Vendor: Universal Speech Solutions LLC
 
-asterisk extensions
+asterisk Soundhound BS example  extensions
+
+with domains
 
 exten=> 7649,1,Answer
 exten=> 7649,2,Set(SOUNDHOUNDBSDOMAINS=Query Glue,Map Data,Weather)
 exten=> 7649,3,Verbose(${SOUNDHOUNDBSDOMAINS} )
-exten=> 7649,4,agi(github/asterisk/agi/soundhoundbs/agi_soundhoundbs.py)
+exten=> 7649,4,agi(agi_soundhoundbs.py)
 exten=> 7649,5,Hangup()
 
+without domains
+
+exten=> 7649,1,Answer
+exten=> 7649,2,agi(agi_soundhoundbs.py)
+exten=> 7649,3,Hangup()
 
 """
 
@@ -25,22 +32,21 @@ exten=> 7649,5,Hangup()
 import sys
 from asterisk.agi import *
 import json
+import re
 
 REQUEST_INFO={}
+CONVERSATION_STATE={}
 
 class SoundhoundBS_APP:
-    """A class representing DialogflowCX application"""
 
+    """A class representing SoundhoundBS application"""
     def __init__(self, options):
-
         """Constructor"""
-
         self.options = options
         self.domains = agi.get_variable('SOUNDHOUNDBSDOMAINS')
         self.status = None
         self.cause = None
         self.prompt="Welcome to soundhound bot services"
-        self.request_info=True
  
 
 
@@ -75,18 +81,20 @@ class SoundhoundBS_APP:
         else:
             agi.verbose('recognition completed abnormally')
 
+    
+
+
     def compose_request_info(self):
 
         """This is an internal function which composes request info"""
-        if self.domains:
-            domains=self.domains.split(',')
-            agi.verbose('got domains %s' % domains)
+        domains=self.domains.split(',')
+        agi.verbose('got domains %s' % domains)
             
-            REQUEST_INFO["Domains"]={"Only":{"DomainNames":domains}}
+        REQUEST_INFO["Domains"]={"Only":{"DomainNames":domains}}
             
         
 
-        """for more parameters got to https://docs.houndify.com/reference/RequestInfo"""
+        """for more parameters go to https://docs.houndify.com/reference/RequestInfo"""
         # if self.InputLanguageEnglishName:
         #     REQUEST_INFO["InputLanguageEnglishName"]="English"
 
@@ -103,9 +111,9 @@ class SoundhoundBS_APP:
         #     REQUEST_INFO["Longitude"]=44.4454
         agi.verbose('got request info %s' % REQUEST_INFO)
         
-    def escape(self):
+    def escape(self,data):
         """This is an internal function which escape/unescape request info fields"""
-        return json.dumps(REQUEST_INFO).replace('"', '\\\\\\"')
+        return json.dumps(data).replace('"', '\\\\\\"')
 
 
     def compose_speech_grammar(self):
@@ -114,12 +122,26 @@ class SoundhoundBS_APP:
         grammar = 'builtin:speech/transcribe'
         separator = '?'
         
-        if self.request_info:
-            self.compose_request_info()
-            agi.verbose('got request info %s' % self.escape())
-            grammar = self.append_grammar_parameter(grammar, "request-info-json",self.escape() , separator) 
+        """Uncomment this if need to use with a domains predefined in asterisk extension"""
+        # if self.domains:
+        #     self.compose_request_info()
+
+        if REQUEST_INFO:
+            agi.verbose('got request info %s' % self.escape(REQUEST_INFO))
+            grammar = self.append_grammar_parameter(grammar, "request-info-json",self.escape(REQUEST_INFO) , separator) 
             separator = ';'
-       
+
+        """Comment this if need to use conversation state as an object""" 
+        if CONVERSATION_STATE:
+            for x in CONVERSATION_STATE.keys():
+                grammar = self.append_grammar_parameter(grammar, re.sub(r"(\w)([A-Z])", r"\1-\2", x).lower() ,CONVERSATION_STATE[x] , separator)
+                separator = ';'
+
+        """Uncomment this if need to use conversation state as an object"""
+        # if CONVERSATION_STATE:
+        #     grammar = self.append_grammar_parameter(grammar, "conversation-state-json", self.escape(CONVERSATION_STATE) , separator)
+        #     separator = ';'
+            
         return grammar
 
  
@@ -129,11 +151,20 @@ class SoundhoundBS_APP:
         grammar = 'builtin:dtmf/digits'
         separator = '?'
         
-        if self.request_info:
-            self.compose_request_info()
-            grammar = self.append_grammar_parameter(grammar, "request-info-json", self.escape() , separator)
+        if REQUEST_INFO:
+            grammar = self.append_grammar_parameter(grammar, "request-info-json", self.escape(REQUEST_INFO) , separator)
             separator = ';'
 
+        """Comment this if need to use conversation state as an object""" 
+        if CONVERSATION_STATE:
+            for x in CONVERSATION_STATE.keys():
+                grammar = self.append_grammar_parameter(grammar, re.sub(r"(\w)([A-Z])", r"\1-\2", x).lower() ,CONVERSATION_STATE[x] , separator)
+                separator = ';'
+
+        """Uncomment this if need to use conversation state as an object"""
+        # if CONVERSATION_STATE:
+        #     grammar = self.append_grammar_parameter(grammar, "conversation-state-json", self.escape(CONVERSATION_STATE) , separator)
+        #     separator = ';'
         return grammar
 
  
@@ -144,11 +175,20 @@ class SoundhoundBS_APP:
         grammar += "%s%s=%s" % (separator, name, value)
         return grammar
 
- 
+    def trigger_conversation_state_field(self,field):
+        """Retrieves conversationState field from the data returned by bot"""
+
+        data=agi.get_variable('RECOG_INSTANCE(0/0/AllResults/0/ConversationState/%s)' %field)
+        agi.verbose('got %s: %s' % (field,data))
+        CONVERSATION_STATE[field]=data
+       
+            
+
 
     def get_prompt(self):
 
         """Retrieves prompt from the data returned by bot"""
+        
         prompt = agi.get_variable('RECOG_INSTANCE(0/0/AllResults/0/SpokenResponseLong)') 
 
         """Uncomment this line if your python version is 2.7"""
@@ -178,7 +218,7 @@ class SoundhoundBS_APP:
             if self.status == 'OK':
                 if self.cause == '000':
                     self.prompt = self.get_prompt()
-
+                    self.trigger_conversation_state_field('ConversationStateTime')
                 elif self.cause != '001' and self.cause != '002':
                     processing = False
             elif self.cause != '001' and self.cause != '002':
@@ -193,7 +233,7 @@ class SoundhoundBS_APP:
  
 
 agi = AGI()
-options = 'plt=1&b=1&sct=1000&sint=15000&nit=15000&nif=json&gd=$'
+options = 'plt=1&b=1&sct=1000&sint=15000&nit=15000&nif=json&gd=$&p=unihoundify-bot'
 soundhoundbs_app = SoundhoundBS_APP(options)
 soundhoundbs_app.run()
 agi.verbose('exiting')
