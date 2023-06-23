@@ -46,7 +46,7 @@ exten => 753,2,agi(agi_nuance_sr_nlu.py)
 ;nuance-bot
 exten => 753,1,Answer()
 exten => 753,2,Set(MODEL="urn:nuance-mix:tag:model/A7315_C150290/mix.dialog")
-exten => 753,3,Set(SSML="true")
+exten => 753,3,Set(SSML=True)
 exten => 753,4,agi(agi_nuance_bot.py)
 ```
 
