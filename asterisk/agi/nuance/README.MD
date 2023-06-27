@@ -48,6 +48,12 @@ exten => 753,1,Answer()
 exten => 753,2,Set(MODEL="urn:nuance-mix:tag:model/A7315_C150290/mix.dialog")
 exten => 753,3,Set(SSML=True)
 exten => 753,4,agi(agi_nuance_bot.py)
+
+exten => 754,1,Answer()
+exten => 754,2,Set(MODEL="urn:nuance-mix:tag:model/A7315_C150290/mix.dialog")
+exten => 754,3,Set(SSML=True)
+exten => 754,4,Set(NEURALVOICE="en-US-JennyNeural") 
+exten => 754,5,agi(agi_nuance_bot.py)
 ```
 
 

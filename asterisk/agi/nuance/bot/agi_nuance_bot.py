@@ -14,7 +14,6 @@
 import sys
 import json
 from asterisk.agi import *
-from ssml_builder.core import Speech
 
 
 
@@ -40,6 +39,8 @@ class NuanceBotApp:
         self.recognitionSettings=None
         
         self.ssml = agi.get_variable('SSML')
+
+        self.neural_voice = agi.get_variable('NEURALVOICE')
 
     def set_method(self,grammar,method):
 
@@ -201,6 +202,7 @@ class NuanceBotApp:
             self.prompt = ' '
 
         if self.recognitionSettings:
+
             self.compose_speech_options()
 
         args = "\\\"%s\\\",\\\"%s\\\",%s" % (
@@ -304,9 +306,13 @@ class NuanceBotApp:
     def compose_ssml(self,prompts):
 
         """composes ssml"""
+        
+        if self.neural_voice:
+
+            prompts="<voice name='\"%s'\"> %s</voice>" % (self.neural_voice,prompts)
 
         ssml="<speak version='\"1.0'\" xmlns='\"http://www.w3.org/2001/10/synthesis'\"> %s </speak>" % prompts
-        
+
         agi.verbose('got ssml %s' % ssml)
         
         return ssml
