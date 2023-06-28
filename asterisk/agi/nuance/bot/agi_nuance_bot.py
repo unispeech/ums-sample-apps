@@ -40,8 +40,6 @@ class NuanceBotApp:
         
         self.ssml = agi.get_variable('SSML')
 
-        self.neural_voice = agi.get_variable('NEURALVOICE')
-
     def set_method(self,grammar,method):
 
         """Sets method """
@@ -306,10 +304,6 @@ class NuanceBotApp:
     def compose_ssml(self,prompts):
 
         """composes ssml"""
-        
-        if self.neural_voice:
-
-            prompts="<voice name='\"%s'\"> %s</voice>" % (self.neural_voice,prompts)
 
         ssml="<speak version='\"1.0'\" xmlns='\"http://www.w3.org/2001/10/synthesis'\"> %s </speak>" % prompts
 
