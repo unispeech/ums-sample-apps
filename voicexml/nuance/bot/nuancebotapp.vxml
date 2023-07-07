@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<!--
+ Google Dialogflow CX vxml Application
+    * Revision: 2
+    * Date: May 5, 2021
+    * Vendor: Universal Speech Solutions LLC
+    This Vxml Application interacts with Google Dialogflow cx API via UniMRCP server.
+    Set your AWS LEX credentials in GdfCxAgentSettings.json
+
+    For using  with Aspect Voxeo Prophecy server 
+    add "builtin:grammar" to grammar 
+    * this.SpeechGrammar ="builtin:grammar/builtin:speech/transcribe?"
+-->
+
+<vxml version="2.1" xmlns="http://www.w3.org/2001/vxml" >
+ 
+  
+  <script>
+      <![CDATA[
+        function  main(data){
+          this.result;
+          this.responseMessages="";
+          this.finalResponseMessages="Thank you. See you next time."
+          this.endOfSession=false;
+          this.agentSettings="";
+          this.WelcomeGrammar="";
+          this.SpeechGrammar="";
+          this.DtmfGrammar="";
+          this.recognitionSettings=""
+          this.dtmf_settings=""
+          this.dialog_end_action=""
+          this.dialog_end_action=""
+          this.transfer=""
+          if(application.lastresult$){
+            this.result = application.lastresult$[0].interpretation;
+          }
+
+
+
+          if (this.result){
+              messages= this.result.response.payload.messages[0].nlg;
+              for (var i = 0; i < messages.length; i++) {
+                if(messages[i].text!=undefined){
+                  
+                    this.responseMessages+=messages[i].text;
+                  
+
+                }
+              }
+              messages2= this.result.response.payload.qaAction.message.nlg;
+              for (var i = 0; i < messages2.length; i++) {
+                if(messages2[i].text!=undefined){
+                  
+                    this.responseMessages+=messages2[i].text;
+                  
+
+                }
+              }
+
+              this.recognitionSettings=this.result.response.payload.qaAction.recognitionSettings
+              
+
+
+
+
+
+
+          }
+          
+          
+          if(this.result){
+            var dialog_end_action=this.result.response.payload.endAction.id
+            if(dialog_end_action.includes("EndCall")){
+              this.endOfSession=true;
+            }
+
+            var var dialog_end_action=this.result.response.payload.endAction.escalationAction.id
+            if(dialog_escalation_action.includes("Transfer")){
+              this.transfer=true;
+            }
+            
+
+          }
+
+          if(data){
+              var welcomeFlow="method=Execute";
+              var mainFlow="method=ExecuteStream";
+
+              for (var key in data) {
+                if( data.hasOwnProperty(key) ) {
+                  this.agentSettings += key + "=" + data[key]+";";
+                } 
+              }       
+              this.WelcomeGrammar="builtin:speech/transcribe?"+welcomeFlow+";"+this.agentSettings;       
+              this.SpeechGrammar="builtin:speech/transcribe?"+mainFlow+";"+this.agentSettings;
+              this.DtmfGrammar="builtin:dtmf/digits?"+this.agentSettings;
+          }
+
+        }
+
+      ]]> 
+       
+      
+
+  </script>
+  
+  <data src="NuanceBotSettings.json" name="agentSettings"/>
+  <var name="app" expr="new main(agentSettings)"/> 
+  
+  <form id="welcome">
+    
+    <property name="recordutterance" expr="false"/>
+    <property name="timeout" expr="10s"/>
+    
+    <field >
+      <grammar  expr="app.WelcomeGrammar"/> 
+
+      
+
+     <filled>
+        
+        <assign name="app" expr="new main(agentSettings)"/>  
+        <log>got agent agentSettings <value expr="agentSettings"/></log>
+        <log>got welcome message <value expr="app.responseMessages"/></log> 
+        <prompt><value expr="app.responseMessages"/></prompt> 
+        
+      </filled>
+      
+    </field>
+    <block>
+      
+      <goto next="#main"/>
+    </block>
+  </form>
+
+
+
+  <form id="main">
+    <property name="recordutterance" value="false"/>
+    <property name="timeout" expr="app.recognitionSettings.collectionSettings.timeout"/>
+    <property name="incompletetimeout" expr="app.recognitionSettings.collectionSettings.incompleteTimeout"/>
+    
+
+    <field>
+      <grammar mode="voice" expr="app.SpeechGrammar"/>
+      <grammar mode="dtmf" expr="app.DtmfGrammar"/>
+      <filled>
+        <assign name="app" expr="new main(agentSettings)"/> 
+        <log>got main responseMessages <value expr="app.responseMessages"/></log> 
+        <prompt><value expr="app.responseMessages"/></prompt>        
+
+        <if cond="app.dialog_escalation_action">
+          <log>got endOfSession <value expr="app.dialog_escalation_action"/></log>
+          <goto next="#exit"/>
+        </if>
+        <if cond="app.dialog_end_action">
+          <log>got endOfSession <value expr="app.dialog_end_action"/></log>
+          <goto next="#exit"/>
+        </if>
+       
+      </filled>
+
+      <catch event="noinput nomatch">
+         <prompt><value expr="app.responseMessages"/></prompt>
+         <reprompt/>
+      </catch>
+      <catch event="error">
+         <prompt><value expr="_message"/></prompt>
+         <goto next="#exit"/>
+      </catch>
+    </field>
+
+    
+    <block>
+      
+      <goto next="#main"/>
+    </block>
+  </form>
+  
+
+  <form id="exit">
+    <block>
+      <prompt><value expr="app.finalResponseMessages"/></prompt>
+      <disconnect/>
+    </block>
+  </form>
+
+  <catch>
+    <log>Caught event: <value expr="_event"/>, message: <value expr="_message"/></log>
+  </catch>
+</vxml>
