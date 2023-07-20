@@ -30,6 +30,8 @@ class NuanceBotApp:
 
         self.model = agi.get_variable('MODEL')
 
+        self.selector_channel = agi.get_variable('SELECTOR_CHANNEL')
+
         self.tag_format="semantics/json"
 
         self.status = None
@@ -38,7 +40,17 @@ class NuanceBotApp:
 
         self.recognitionSettings=None
         
-        self.ssml = agi.get_variable('SSML')
+        self.ssml = agi.get_variable('CUSTOMSSML')
+
+    def set_selector_channel(self,grammar):
+
+        """Sets selector channel """
+
+        separator = ';'
+
+        grammar = self.append_grammar_parameter(grammar, "selector-channel", self.selector_channel, separator)
+
+        return grammar
 
     def set_method(self,grammar,method):
 
@@ -170,6 +182,8 @@ class NuanceBotApp:
 
         grammar = self.set_model(grammar)
 
+        grammar = self.set_selector_channel(grammar)
+
         grammar = self.set_tag_format(grammar)
 
 
@@ -243,6 +257,8 @@ class NuanceBotApp:
 
         grammar = self.set_model(grammar)
 
+        grammar = self.set_selector_channel(grammar)
+
         grammar = self.set_tag_format(grammar)
 
 
@@ -257,8 +273,10 @@ class NuanceBotApp:
         grammar = 'builtin:dtmf/digits'
 
         grammar +="?"
-
+        
         grammar = self.set_model(grammar)
+
+        grammar = self.set_selector_channel(grammar)
 
         grammar = self.set_tag_format(grammar)
 
@@ -319,7 +337,7 @@ class NuanceBotApp:
 
         nlg=agi.get_variable('RECOG_INSTANCE(0/0/response/payload/%s)' % path)
         
-        agi.verbose('got nlg %s' % nlg)
+        # agi.verbose('got nlg %s' % nlg)
 
         return self.str_to_json(nlg)
 
@@ -329,13 +347,16 @@ class NuanceBotApp:
 
         prompts=''
         
+        agi.verbose('got' % data)
+
         if data:
             
             for i in range(len(data)):
                
-                agi.verbose('got %s prompt %s' % (i,data[i]['text']))
+                # agi.verbose('got %s prompt %s' % (i,data[i]['text']))
                
                 prompts += f"{str(data[i]['text'])}"
+
         
         return prompts
 
@@ -345,17 +366,21 @@ class NuanceBotApp:
 
         prompts=''
 
-        nlg1 = self.get_nlg("messages/0/nlg")
+        nlgs = self.get_nlg("messages")
 
-        agi.verbose('got nlg 1 %s'  % nlg1)
+        for j in range(len(nlgs)):
 
-        prompts += self.get_prompts(nlg1)
+            agi.verbose('got nlg 1 %s'  %nlgs[j]['nlg'])
+
+            prompts += self.get_prompts(nlgs[j]['nlg'])
 
         nlg2 = self.get_nlg("qaAction/message/nlg")
 
-        agi.verbose('got nlg 2 %s' % nlg2)
+        if nlg2:
 
-        prompts += self.get_prompts(nlg2)
+            agi.verbose('got nlg 2 %s' % nlg2)
+
+            prompts += self.get_prompts(nlg2)
 
         agi.verbose('got ssml %s ' % self.ssml)
 
