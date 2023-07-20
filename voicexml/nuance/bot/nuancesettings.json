@@ -1,3 +1,4 @@
 {   
-    "model":"urn:nuance-mix:tag:model/A7315_C150290/mix.dialog"
+    "model":"urn:nuance-mix:tag:model/A7315_C150290/mix.dialog",
+    "selector-channel":"IVR channel"
 }
