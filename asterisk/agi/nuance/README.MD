@@ -30,9 +30,16 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install pyst2.
 pip install pyst2
 ```
 
+
 ## Usage
 
-Put this extentions to your /etc/asterisk/extensions.conf
+add extentions to /etc/asterisk/extensions.conf
+
+CUSTOM SSML WORKS WITH UNIMRCP NUANCE SS PLUGIN FOLLOWING CONFIGURATION
+
+ <synth-settings
+      bypass-ssml="false"
+
 ```bash
 
 ;nuance-sr
