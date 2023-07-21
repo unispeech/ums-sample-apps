@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <!--
- Google Dialogflow CX vxml Application
+ NUANCE MX  vxml Application
     * Revision: 2
-    * Date: May 5, 2021
+    * Date: JULY 7, 2023
     * Vendor: Universal Speech Solutions LLC
-    This Vxml Application interacts with Google Dialogflow cx API via UniMRCP server.
-    Set your AWS LEX credentials in GdfCxAgentSettings.json
+    This Vxml Application interacts with NUANCE MX BOT API via UniMRCP server.
+    Set your AWS LEX credentials in NuanceBotSettings.json
 
     For using  with Aspect Voxeo Prophecy server 
     add "builtin:grammar" to grammar 
