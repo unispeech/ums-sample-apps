@@ -355,7 +355,7 @@ class NuanceBotApp:
                
                 # agi.verbose('got %s prompt %s' % (i,data[i]['text']))
                
-                prompts += f"{str(data[i]['text'])}"
+                prompts += f"<p>{str(data[i]['text'])}</p>"
 
         
         return prompts
