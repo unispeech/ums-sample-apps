@@ -5,7 +5,7 @@
     * Date: JULY 7, 2023
     * Vendor: Universal Speech Solutions LLC
     This Vxml Application interacts with NUANCE MX BOT API via UniMRCP server.
-    Set your AWS LEX credentials in NuanceBotSettings.json
+    Set your NUANCE bot credentials in NuanceBotSettings.json
 
     For using  with Aspect Voxeo Prophecy server 
     add "builtin:grammar" to grammar 
