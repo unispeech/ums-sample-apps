@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
- Sample vxml Application Nuance sr
+ Sample vxml Application Nuance nr
     * Revision: 1
     * Date: Oct 8, 2023
     * Vendor: Universal Speech Solutions LLC
@@ -22,7 +22,7 @@
     <property name="timeout" value="10s"/>
 
     <field>
-      <grammar src="builtin:speech/transcribe"/>
+      <grammar src = "grammar.xml" type="application/srgs+xml"/>
       
       <filled> 
         <log>got next message : <value expr="application.lastresult$[0].utterance"/></log> 
