@@ -231,7 +231,7 @@ Configure expected NLSML format of unimrcp server on umsazurebot.xml for xml
 ```xml
 
     <results
-      format="standart"
+      format="standard"
       indent="0"
       replace-dots="true"
       confidence-format="auto"
