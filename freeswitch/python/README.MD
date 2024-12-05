@@ -128,7 +128,7 @@ Configure expected NLSML format from unimrcp server on umslex.xml
 ```xml
 
     <results
-      format="JSON"
+      format="json"
       indent="0"
       replace-dots="true"
       confidence-format="auto"
@@ -155,7 +155,7 @@ Configure expected NLSML format of unimrcp server on umsgdf.xml
 ```xml
 
     <results
-      format="JSON"
+      format="json"
       indent="0"
       replace-dots="true"
       confidence-format="auto"
@@ -180,7 +180,7 @@ Configure expected NLSML format of unimrcp server on umsgdf.xml for json
 ```xml
 
     <results
-      format="JSON"
+      format="json"
       indent="0"
       replace-dots="true"
       confidence-format="auto"
@@ -191,7 +191,7 @@ Configure expected NLSML format of unimrcp server on umsgdf.xml for xml
 ```xml
 
     <results
-      format="standart"
+      format="standard"
       indent="0"
       replace-dots="true"
       confidence-format="auto"
@@ -219,7 +219,7 @@ Configure expected NLSML format of unimrcp server on umsazurebot.xml for json
 ```xml
 
     <results
-      format="JSON"
+      format="json"
       indent="0"
       replace-dots="true"
       confidence-format="auto"
