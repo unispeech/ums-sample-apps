@@ -53,9 +53,19 @@ exten => 753,2,Set(AWS_BOT_ID="your_bot_id")
 exten => 753,3,Set(AWS_ALIAS_ID="your_bot_alias_id")
 exten => 753,4,agi(/lex/sample/agi_lexv2.py)
 
+
+;openaibs 
+exten => 755,1,Answer()
+exten => 755,2,Set(LANGUAGE="en-US")
+exten => 755,3,Set(VOICENAME="coral")
+exten => 755,4,Set(TRANSCRIPTION_MODEL="whisper-1")
+exten => 755,5,agi(agi_openaibs.py)
+
+
+
 ;open ai chatgpt
-exten => 754,1,Answer()
-exten => 754,2,agi(agi_chatgpt.py)
+exten => 756,1,Answer()
+exten => 756,2,agi(agi_chatgpt.py)
 ```
 
 
