@@ -8,11 +8,11 @@
     * Date: March 21, 2025
     * Vendor: Universal Speech Solutions LLC
 
-asterisk extensions
-
-exten=> 7649,1,Answer
-exten=> 7649,2,agi(github/asterisk/agi/agi_openaibs.py)
-exten=> 7649,3,Hangup()
+exten => 751,1,Answer()
+exten => 751,2,Set(LANGUAGE="en-US")
+exten => 751,3,Set(VOICENAME="coral")
+exten => 751,4,Set(TRANSCRIPTION_MODEL="gpt-4o-mini-transcribe")
+exten => 751,5,agi(agi_openaibs.py)
 
 """
 
@@ -33,6 +33,9 @@ class OpenAIBS_APP:
         self.options = options
         self.status = None
         self.cause = None
+        self.language=agi.get_variable("LANGUAGE")
+        self.voice_name=agi.get_variable("VOICENAME")
+        self.transcription_model=agi.get_variable("TRANSCRIPTION_MODEL")
         self.prompt="Welcome to OpenAI. How can I help you?"
   
 
@@ -50,7 +53,7 @@ class OpenAIBS_APP:
             self.prompt = ' '
 
         args = "\\\"%s\\\",\\\"%s\\\",%s" % (
-            self.prompt, self.grammars, self.options)
+            self.prompt, self.grammars, self.compose_speech_options(self.options))
         agi.verbose('got args %s' % args)
         agi.set_variable('RECOG_STATUS', '')
         agi.set_variable('RECOG_COMPLETION_CAUSE', '')
@@ -65,12 +68,35 @@ class OpenAIBS_APP:
             agi.verbose('recognition completed abnormally')
 
 
+    def compose_speech_options(self,options):
+        """Composes speech options """
+        separator = '&'
+        if self.language:
+
+            agi.verbose('got language  to set %s' % self.language)
+
+            options = self.append_option_parameter(
+                options, "spl",self.language, separator)
+
+        if self.voice_name:
+
+            agi.verbose('got voice name to set %s' % self.voice_name)
+
+            options = self.append_option_parameter(
+                options, "vn", self.voice_name, separator)
+
+
+        return options
+
     def compose_speech_grammar(self):
 
         """Composes a built-in speech grammar"""
         grammar = 'builtin:speech/transcribe'
         separator = '?'
-
+        if self.transcription_model:
+            grammar = self.append_grammar_parameter(
+                grammar, "transcription_model", self.transcription_model, separator)
+            separator = ';'
         return grammar
 
  
@@ -78,8 +104,24 @@ class OpenAIBS_APP:
 
         """Composes a built-in DTMF grammar"""
         grammar = 'builtin:dtmf/digits'
+
         separator = '?'
+        
+        if self.transcription_model:
+        
+            grammar = self.append_grammar_parameter(
+        
+                grammar, "transcription_model", self.transcription_model, separator)
+        
+            separator = ';'
+        
         return grammar
+
+    def append_option_parameter(self, options, name, value, separator):
+        """Appends a name/value parameter to the specified grammar"""
+        options += "%s%s=%s" % (separator, name, value)
+        
+        return options
 
 
     def append_grammar_parameter(self, grammar, name, value, separator):
@@ -115,7 +157,7 @@ class OpenAIBS_APP:
         # if isinstance(prompt, str):
         #     prompt = unicode(prompt, 'utf-8')
         agi.verbose('got prompt %s' % prompt)
-        
+
         return prompt
 
 
