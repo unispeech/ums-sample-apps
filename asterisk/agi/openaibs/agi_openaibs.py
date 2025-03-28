@@ -11,8 +11,10 @@
 exten => 751,1,Answer()
 exten => 751,2,Set(LANGUAGE="en-US")
 exten => 751,3,Set(VOICENAME="coral")
-exten => 751,4,Set(TRANSCRIPTION_MODEL="gpt-4o-mini-transcribe")
-exten => 751,5,agi(agi_openaibs.py)
+; The set of modalities the model can respond with. To disable audio, set this to ["text"].
+exten => 751,4,Set(MODALITIES=\"\"text\"]\")
+exten => 751,5,Set(TRANSCRIPTION_MODEL="gpt-4o-mini-transcribe")
+exten => 751,6,agi(agi_openaibs.py)
 
 """
 
@@ -36,6 +38,7 @@ class OpenAIBS_APP:
         self.language=agi.get_variable("LANGUAGE")
         self.voice_name=agi.get_variable("VOICENAME")
         self.transcription_model=agi.get_variable("TRANSCRIPTION_MODEL")
+        self.modalities=agi.get_variable("MODALITIES")
         self.prompt="Welcome to OpenAI. How can I help you?"
   
 
@@ -95,8 +98,14 @@ class OpenAIBS_APP:
         separator = '?'
         if self.transcription_model:
             grammar = self.append_grammar_parameter(
-                grammar, "transcription_model", self.transcription_model, separator)
+                grammar, "transcription-model", self.transcription_model, separator)
             separator = ';'
+
+        if self.modalities:
+            grammar = self.append_grammar_parameter(
+                grammar, "modalities", self.modalities, separator)
+            separator = ';'
+            
         return grammar
 
  
@@ -110,9 +119,14 @@ class OpenAIBS_APP:
         if self.transcription_model:
         
             grammar = self.append_grammar_parameter(
+                grammar, "transcription-model", self.transcription_model, separator)
         
-                grammar, "transcription_model", self.transcription_model, separator)
-        
+            separator = ';'
+
+        if self.modalities:
+
+            grammar = self.append_grammar_parameter(
+                grammar, "modalities", self.modalities, separator)
             separator = ';'
         
         return grammar

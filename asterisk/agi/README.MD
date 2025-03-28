@@ -58,8 +58,10 @@ exten => 753,4,agi(/lex/sample/agi_lexv2.py)
 exten => 755,1,Answer()
 exten => 755,2,Set(LANGUAGE="en-US")
 exten => 755,3,Set(VOICENAME="coral")
-exten => 755,4,Set(TRANSCRIPTION_MODEL="whisper-1")
-exten => 755,5,agi(agi_openaibs.py)
+; The set of modalities the model can respond with. To disable audio, set this to "text".
+exten => 755,4,Set(MODALITIES="text\,audio")
+exten => 755,5,Set(TRANSCRIPTION_MODEL="gpt-4o-mini-transcribe")
+exten => 755,6,agi(agi_openaibs.py)
 
 
 
