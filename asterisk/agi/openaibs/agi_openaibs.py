@@ -8,13 +8,13 @@
     * Date: March 21, 2025
     * Vendor: Universal Speech Solutions LLC
 
-exten => 751,1,Answer()
-exten => 751,2,Set(LANGUAGE="en-US")
-exten => 751,3,Set(VOICENAME="coral")
+exten => 755,1,Answer()
+exten => 755,2,Set(LANGUAGE="en-US")
+exten => 755,3,Set(VOICENAME="coral")
 ; The set of modalities the model can respond with. To disable audio, set this to ["text"].
-exten => 751,4,Set(MODALITIES=\"\"text\"]\")
-exten => 751,5,Set(TRANSCRIPTION_MODEL="gpt-4o-mini-transcribe")
-exten => 751,6,agi(agi_openaibs.py)
+exten => 755,4,Set(MODALITIES="text\,audio")
+exten => 755,5,Set(TRANSCRIPTION_MODEL="gpt-4o-mini-transcribe")
+exten => 755,6,agi(agi_openaibs.py)
 
 """
 
