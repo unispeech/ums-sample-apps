@@ -250,3 +250,42 @@ Configure expected NLSML format of unimrcp server on umsazurebot.xml for xml
       </condition>
     </extension> 
 ```
+
+
+## OpenAIBS instructions
+Configure expected NLSML format of unimrcp server on umsazurebot.xml for json
+```xml
+
+    <results
+      format="json"
+      indent="0"
+      confidence-format="auto"
+   />
+```
+
+Configure expected NLSML format of unimrcp server on umsazurebot.xml for xml
+```xml
+
+    <results
+      format="standard"
+      indent="0"
+      confidence-format="auto"
+   />
+
+```
+
+
+```xml
+    <extension name="7008">
+      <condition field="destination_number" expression="^7007$">
+          <action application="set" data="LANGUAGE=en-US"/>
+          <action application="set" data="VOICENAME=coral"/>
+          <action application="set" data="TRANSCRIPTION_MODEL=whisper-1"/>
+          <action application="set" data="MODALITIES=text\,audio"/>
+          <action application="set" data="asr_engine=unimrcp:transcribe_mrcp-v2"/>
+          <action application="set" data="tts_engine=unimrcp:transcribe_mrcp-v2"/>
+          <action application="python" data="freeswitch_openaibs"/>
+          
+
+      </condition>
+    </extension>
