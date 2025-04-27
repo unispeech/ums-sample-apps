@@ -74,6 +74,16 @@ exten => 756,6,Set(MODALITIES="text\,audio")
 exten => 756,7,Set(TRANSCRIPTION_MODEL="gpt-4o-mini-transcribe")
 exten => 756,8,agi(agi_openaibs_functioncall.py)
 
+;openaibs instructions
+exten => 757,1,Answer()
+exten => 757,2,Set(LANGUAGE="en-US")
+exten => 757,3,Set(VOICENAME="coral")
+exten => 757,4,Set(INSTRUCTIONS=You are Car Rental Agent)
+exten => 757,5,set(METHOD=create-response)
+exten => 757,6,Set(MODALITIES="text\,audio")
+exten => 757,7,Set(TRANSCRIPTION_MODEL="gpt-4o-mini-transcribe")
+exten => 757,8,agi(agi_openaibs_instructions.py)
+
 
 ;open ai chatgpt
 exten => 756,1,Answer()
