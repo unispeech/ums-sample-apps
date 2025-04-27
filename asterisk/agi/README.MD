@@ -64,6 +64,16 @@ exten => 755,5,Set(TRANSCRIPTION_MODEL="gpt-4o-mini-transcribe")
 exten => 755,6,agi(agi_openaibs.py)
 
 
+;openaibs functioncall
+exten => 756,1,Answer()
+exten => 756,2,Set(LANGUAGE="en-US")
+exten => 756,3,Set(VOICENAME="coral")
+exten => 756,4,set(METHOD=create-response)
+exten => 756,5,set(JSONPATH=/var/lib/asterisk/agi-bin/tools.json)
+exten => 756,6,Set(MODALITIES="text\,audio")
+exten => 756,7,Set(TRANSCRIPTION_MODEL="gpt-4o-mini-transcribe")
+exten => 756,8,agi(agi_openaibs_functioncall.py)
+
 
 ;open ai chatgpt
 exten => 756,1,Answer()
