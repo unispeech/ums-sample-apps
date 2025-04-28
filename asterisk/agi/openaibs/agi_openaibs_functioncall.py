@@ -51,6 +51,7 @@ class OpenAIBS_APP:
 
         grammar = 'builtin:speech/transcribe'
         separator = '?'
+        
 
         if self.method:
 
@@ -72,6 +73,20 @@ class OpenAIBS_APP:
                     grammar, "conversation-item-json", json.dumps(conversation_item).replace('"', '\\\\\\"'), separator)
                 separator = ';'
 
+
+
+        if self.transcription_model:
+            grammar = self.append_grammar_parameter(
+                grammar, "transcription-model", self.transcription_model, separator)
+            separator = ';'
+
+        if self.modalities:
+            grammar = self.append_grammar_parameter(
+                grammar, "modalities", self.modalities, separator)
+            separator = ';'
+
+
+            
         self.prompt = ' '
         self.grammars = grammar
         self.synth_and_recog()

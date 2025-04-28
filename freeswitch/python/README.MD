@@ -289,3 +289,24 @@ Configure expected NLSML format of unimrcp server on umsazurebot.xml for xml
 
       </condition>
     </extension>
+
+```
+
+
+```xml
+    <extension name="7009">
+      <condition field="destination_number" expression="^7007$">
+          <action application="set" data="LANGUAGE=en-US"/>
+          <action application="set" data="VOICENAME=coral"/>
+          <action application="set" data="TRANSCRIPTION_MODEL=whisper-1"/>
+          <action application="set" data="MODALITIES=text\,audio"/>
+          <action application="set" data="JSONPATH=/home/tools.json"/>
+          <action application="set" data="asr_engine=unimrcp:transcribe_mrcp-v2"/>
+          <action application="set" data="tts_engine=unimrcp:transcribe_mrcp-v2"/>
+          <action application="python" data="freeswitch_openaibs_functioncall"/>
+          
+
+      </condition>
+    </extension>
+
+```
